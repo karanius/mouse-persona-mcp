@@ -1,6 +1,6 @@
 {
   "name": "@canadreamers/mouse-persona-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for visual cursor control — persona labels, thought bubbles, click ripples, and green highlights for LLM-driven browser demos",
   "main": "dist/index.js",
   "bin": {
@@ -10,6 +10,13 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch"
+  },
+  "files": [
+    "dist",
+    "overlay.js"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "keywords": [
     "mcp",

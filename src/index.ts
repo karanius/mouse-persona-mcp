@@ -1,14 +1,4 @@
 #!/usr/bin/env node
-/**
- * Mouse Persona MCP Server
- *
- * Provides visual cursor control tools for LLM-driven browser demos.
- * Connects to Chrome via CDP and injects a persistent overlay that
- * survives page navigations.
- *
- * Usage:
- *   npx @canadreamers/mouse-persona-mcp --cdp-port 9222
- */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -17,37 +7,44 @@ import { registerTools } from "./tools.js";
 
 const args = process.argv.slice(2);
 let cdpPort = 9222;
+let defaultPersona = process.env.MOUSE_PERSONA_NAME || "Tester";
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === "--cdp-port" && args[i + 1]) {
-    cdpPort = parseInt(args[i + 1], 10);
+    const parsed = parseInt(args[i + 1], 10);
+    if (isNaN(parsed) || parsed < 1 || parsed > 65535) {
+      console.error(`[mouse-persona] Invalid --cdp-port: ${args[i + 1]}`);
+      process.exit(1);
+    }
+    cdpPort = parsed;
+    i++;
+  }
+  if (args[i] === "--persona" && args[i + 1]) {
+    defaultPersona = args[i + 1];
     i++;
   }
 }
 
 const server = new McpServer({
   name: "mouse-persona",
-  version: "0.1.0",
+  version: "0.2.0",
 });
 
 registerTools(server);
 
 async function main() {
-  // Connect to Chrome via CDP
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("[mouse-persona] MCP server started on stdio");
+
   try {
     await connect(cdpPort);
   } catch {
     console.error(
       `[mouse-persona] Could not connect to Chrome on port ${cdpPort}. ` +
-      `Make sure Chrome is running with --remote-debugging-port=${cdpPort}`
+      `Tools will auto-connect on first call.`
     );
-    // Don't exit — tools will report errors when called
   }
-
-  // Start MCP server on stdio
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("[mouse-persona] MCP server started on stdio");
 }
 
 main().catch((err) => {
