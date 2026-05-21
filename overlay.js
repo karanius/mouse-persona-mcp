@@ -1,13 +1,4 @@
-/**
- * The overlay JavaScript payload — injected into every page via CDP.
- *
- * Creates: SVG cursor, persona label, click ripples, green highlights,
- * thought bubbles with comic cloud tail. All purely visual — no DOM
- * interaction, no event blocking.
- */
 
-export function getOverlayScript(persona: string = "Tester"): string {
-  return `
 (function() {
   if (document.getElementById('mouse-overlay-root')) return;
 
@@ -26,13 +17,13 @@ export function getOverlayScript(persona: string = "Tester"): string {
   // ── Persona Label ──
   const label = document.createElement('div');
   label.id = 'cursor-label';
-  label.textContent = '${persona}';
+  label.textContent = 'Chris Daw';
   label.style.cssText = 'position:fixed;top:calc(50% + 18px);left:calc(50% + 22px);pointer-events:none;z-index:100000;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:10px;box-shadow:0 2px 8px rgba(99,102,241,0.4);white-space:nowrap;';
   root.appendChild(label);
 
   // ── Styles ──
   const css = document.createElement('style');
-  css.textContent = \`
+  css.textContent = `
     * { cursor: none !important; }
     @keyframes mp-ripple { 0% { transform:scale(0);opacity:0.7 } 50% { transform:scale(1);opacity:0.3 } 100% { transform:scale(1.5);opacity:0 } }
     @keyframes mp-ripple-inner { 0% { transform:scale(0);opacity:1 } 100% { transform:scale(1);opacity:0 } }
@@ -60,7 +51,7 @@ export function getOverlayScript(persona: string = "Tester"): string {
       text-align:center;letter-spacing:0.3px;
       transition:opacity 0.3s ease;
     }
-  \`;
+  `;
   document.head.appendChild(css);
 
   // ── API ──
@@ -110,7 +101,7 @@ export function getOverlayScript(persona: string = "Tester"): string {
       const t = document.createElement('div');
       t.id = 'mp-thought';
       t.className = 'mp-thought';
-      t.innerHTML = '<span style="font-style:normal;margin-right:6px">\\u{1F4AD}</span>' + text;
+      t.innerHTML = '<span style="font-style:normal;margin-right:6px">\u{1F4AD}</span>' + text;
       root.appendChild(t);
 
       // Position smartly — avoid edges, follow cursor
@@ -198,5 +189,3 @@ export function getOverlayScript(persona: string = "Tester"): string {
 
   window.__mp.moveCursor(window.innerWidth/2, window.innerHeight/2);
 })();
-`;
-}

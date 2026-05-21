@@ -11,8 +11,15 @@ import { getOverlayScript } from "./overlay.js";
 
 let client: CDP.Client | null = null;
 let currentPersona = "Tester";
+let cdpPort = 9222;
+
+async function ensureConnected(): Promise<void> {
+  if (client) return;
+  await connect(cdpPort);
+}
 
 export async function connect(port: number = 9222): Promise<void> {
+  cdpPort = port;
   try {
     client = await CDP({ port });
     await client.Page.enable();
@@ -36,7 +43,8 @@ export async function connect(port: number = 9222): Promise<void> {
 }
 
 export async function evaluate(expression: string): Promise<any> {
-  if (!client) throw new Error("Not connected to Chrome");
+  await ensureConnected();
+  if (!client) throw new Error("Could not connect to Chrome on port " + cdpPort);
   const result = await client.Runtime.evaluate({
     expression,
     awaitPromise: true,
@@ -49,7 +57,7 @@ export async function evaluate(expression: string): Promise<any> {
 
 export async function setPersona(name: string): Promise<void> {
   currentPersona = name;
-  // Update the persistent injection for future pages
+  await ensureConnected();
   if (client) {
     await client.Page.addScriptToEvaluateOnNewDocument({
       source: getOverlayScript(name),
