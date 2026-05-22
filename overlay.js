@@ -17,6 +17,106 @@
     : { createHTML: function(s) { return s; } };
   function _html(el, s) { el.innerHTML = _tp.createHTML(s); }
 
+  // ── Observability collectors ──
+  var _netLog = [], _toastLog = [], _urlLog = [], _errorLog = [];
+  var _lastUrl = (typeof location !== 'undefined') ? location.href : '';
+
+  // Network interceptor (fetch)
+  var _origFetch = window.fetch;
+  if (_origFetch) {
+    window.fetch = function() {
+      var args = arguments;
+      var method = 'GET', url = '';
+      if (typeof args[0] === 'string') { url = args[0]; }
+      else if (args[0] && args[0].url) { url = args[0].url; }
+      if (args[1] && args[1].method) method = args[1].method;
+      return _origFetch.apply(this, args).then(function(response) {
+        var entry = { method: method, url: url, status: response.status, body: '', ts: performance.now() };
+        try {
+          response.clone().text().then(function(t) { entry.body = t.slice(0, 500); });
+        } catch(e) { entry.body = '(unreadable)'; }
+        _netLog.push(entry);
+        if (_netLog.length > 100) _netLog.shift();
+        return response;
+      });
+    };
+  }
+
+  // Network interceptor (XHR)
+  var _origXHROpen = XMLHttpRequest.prototype.open;
+  var _origXHRSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function(method, url) {
+    this._mpMethod = method;
+    this._mpUrl = url;
+    return _origXHROpen.apply(this, arguments);
+  };
+  XMLHttpRequest.prototype.send = function() {
+    var xhr = this;
+    xhr.addEventListener('load', function() {
+      var ct = (xhr.getResponseHeader('content-type') || '');
+      var body = (ct.indexOf('text') !== -1 || ct.indexOf('json') !== -1) ? (xhr.responseText || '').slice(0, 500) : '(binary)';
+      _netLog.push({ method: xhr._mpMethod || '?', url: xhr._mpUrl || '?', status: xhr.status, body: body, ts: performance.now() });
+      if (_netLog.length > 100) _netLog.shift();
+    });
+    return _origXHRSend.apply(this, arguments);
+  };
+
+  // Console error capture
+  var _origConsoleError = console.error;
+  console.error = function() {
+    _errorLog.push({ msg: Array.prototype.slice.call(arguments).join(' ').slice(0, 500), ts: performance.now() });
+    if (_errorLog.length > 100) _errorLog.shift();
+    return _origConsoleError.apply(console, arguments);
+  };
+  window.addEventListener('error', function(e) {
+    _errorLog.push({ msg: (e.message || '') + ' at ' + (e.filename || '') + ':' + (e.lineno || ''), ts: performance.now() });
+  });
+  window.addEventListener('unhandledrejection', function(e) {
+    _errorLog.push({ msg: 'Unhandled rejection: ' + ((e.reason && e.reason.message) || String(e.reason)).slice(0, 500), ts: performance.now() });
+  });
+
+  // URL change tracker
+  var _origPushState = history.pushState;
+  var _origReplaceState = history.replaceState;
+  function _logUrlChange() {
+    var cur = location.href;
+    if (cur !== _lastUrl) {
+      _urlLog.push({ from: _lastUrl, to: cur, ts: performance.now() });
+      if (_urlLog.length > 50) _urlLog.shift();
+      _lastUrl = cur;
+    }
+  }
+  history.pushState = function() { var r = _origPushState.apply(this, arguments); _logUrlChange(); return r; };
+  history.replaceState = function() { var r = _origReplaceState.apply(this, arguments); _logUrlChange(); return r; };
+  window.addEventListener('popstate', _logUrlChange);
+  window.addEventListener('hashchange', _logUrlChange);
+
+  // Feedback helpers
+  function _snapshotFeedback(sinceTs) {
+    var cutoff = performance.now() - 30000;
+    _netLog = _netLog.filter(function(e) { return e.ts > cutoff; });
+    _toastLog = _toastLog.filter(function(e) { return e.ts > cutoff; });
+    _errorLog = _errorLog.filter(function(e) { return e.ts > cutoff; });
+    _urlLog = _urlLog.filter(function(e) { return e.ts > cutoff; });
+
+    var urlChange = null;
+    for (var i = _urlLog.length - 1; i >= 0; i--) {
+      if (_urlLog[i].ts >= sinceTs) { urlChange = _urlLog[i]; break; }
+    }
+    return {
+      network: _netLog.filter(function(e) { return e.ts >= sinceTs; }),
+      toasts: _toastLog.filter(function(e) { return e.ts >= sinceTs; }),
+      url: urlChange,
+      errors: _errorLog.filter(function(e) { return e.ts >= sinceTs; })
+    };
+  }
+
+  function _waitForFeedback(sinceTs, waitMs) {
+    return new Promise(function(resolve) {
+      setTimeout(function() { resolve(_snapshotFeedback(sinceTs)); }, waitMs || 2000);
+    });
+  }
+
   function injectOverlay() {
     if (_injected) return;
     if (!document.body) return;
@@ -37,6 +137,37 @@
     _root.id = 'mouse-overlay-root';
     _root.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
     document.body.appendChild(_root);
+
+    // Toast/notification detector
+    if (typeof MutationObserver !== 'undefined') {
+      var toastObs = new MutationObserver(function(mutations) {
+        for (var m = 0; m < mutations.length; m++) {
+          for (var n = 0; n < mutations[m].addedNodes.length; n++) {
+            var node = mutations[m].addedNodes[n];
+            if (!node.getAttribute || !node.textContent) continue;
+            if (_root && _root.contains(node)) continue;
+            var role = node.getAttribute('role') || '';
+            var ariaLive = node.getAttribute('aria-live') || '';
+            var cls = (node.className || '').toString().toLowerCase();
+            if (role === 'alert' || ariaLive === 'assertive' || ariaLive === 'polite' ||
+                /toast|notification|snackbar|alert|error|message/i.test(cls)) {
+              var txt = node.textContent.trim().slice(0, 300);
+              if (txt.length > 2) {
+                var type = 'unknown';
+                var combined = (cls + ' ' + txt).toLowerCase();
+                if (combined.indexOf('error') !== -1 || combined.indexOf('fail') !== -1 || combined.indexOf('invalid') !== -1) type = 'error';
+                else if (combined.indexOf('success') !== -1 || combined.indexOf('created') !== -1) type = 'success';
+                else if (combined.indexOf('warn') !== -1) type = 'warning';
+                else if (combined.indexOf('info') !== -1) type = 'info';
+                _toastLog.push({ text: txt, type: type, ts: performance.now() });
+                if (_toastLog.length > 50) _toastLog.shift();
+              }
+            }
+          }
+        }
+      });
+      toastObs.observe(document.body, { childList: true, subtree: true });
+    }
 
     _cursor = document.createElement('div');
     _cursor.id = 'custom-cursor';
@@ -432,9 +563,18 @@
                 self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, 400).then(function() {
                   self.ripple();
                   self.highlight(clickEl);
+                  var beforeClick = performance.now();
                   clickEl.click();
-                  results.push({ step: i, action: 'click', result: { ok: true } });
-                  resolve();
+                  var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : 2000;
+                  if (fbWait > 0) {
+                    _waitForFeedback(beforeClick, fbWait).then(function(fb) {
+                      results.push({ step: i, action: 'click', result: { ok: true }, feedback: fb });
+                      resolve();
+                    });
+                  } else {
+                    results.push({ step: i, action: 'click', result: { ok: true } });
+                    resolve();
+                  }
                 });
               }, 400);
             });
@@ -479,10 +619,19 @@
                     var nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value').set;
                     nativeSetter.call(fillEl, s.value || '');
                   }
+                  var beforeFill = performance.now();
                   fillEl.dispatchEvent(new Event('input', { bubbles: true }));
                   fillEl.dispatchEvent(new Event('change', { bubbles: true }));
-                  results.push({ step: i, action: 'fill', result: { ok: true } });
-                  resolve();
+                  var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
+                  if (fbWaitFill > 0) {
+                    _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
+                      results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
+                      resolve();
+                    });
+                  } else {
+                    results.push({ step: i, action: 'fill', result: { ok: true } });
+                    resolve();
+                  }
                 });
               }, 400);
             });
@@ -547,6 +696,10 @@
       return JSON.stringify({ tape: tape, url: url || location.href, ts: new Date().toISOString() });
     },
 
+    feedback: function() {
+      return _snapshotFeedback(0);
+    },
+
     run: function(script, opts) {
       opts = opts || {};
       var self = this;
@@ -592,7 +745,7 @@
 
   // Wrap every public method to record calls when recording is active.
   // Skip recording-control methods to avoid infinite loops.
-  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, getRecording: 1, toScript: 1, moveCursor: 1 };
+  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
   var _recordDepth = 0;
   Object.keys(window.__mp).forEach(function(key) {
     if (_noRecord[key] || typeof window.__mp[key] !== 'function') return;
