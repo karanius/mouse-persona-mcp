@@ -11,6 +11,7 @@
   var _glideResolve = null;
   var _recording = null;   // array when active, null when idle
   var _recordingStart = 0; // performance.now() at startRecording
+  var _humanPause = 0;     // ms to wait after each thought for human reading
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -307,6 +308,8 @@
 
     commentOn: function(selectorOrOpts, thought, durationMs) {
       durationMs = durationMs || 4000;
+      var readTime = _humanPause || 0;
+      var totalTime = Math.max(durationMs, readTime);
       var el = _resolveTarget(selectorOrOpts);
       if (!el) return Promise.resolve({ ok: false, error: 'not found: ' + JSON.stringify(selectorOrOpts) });
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -318,8 +321,27 @@
           self.glideTo(x, y, 400).then(function() {
             self.ripple(x, y);
             self.highlight(el);
-            self.think(thought, durationMs);
-            resolve({ ok: true, text: (el.textContent || '').trim().slice(0, 120) });
+            self.think(thought, totalTime);
+            if (readTime > 0) {
+              var bubble = document.getElementById('mp-thought');
+              if (bubble) {
+                var countdown = document.createElement('span');
+                countdown.style.cssText = 'display:block;margin-top:6px;font-size:11px;opacity:0.5;font-family:-apple-system,sans-serif;';
+                bubble.appendChild(countdown);
+                var secsLeft = Math.ceil(readTime / 1000);
+                countdown.textContent = secsLeft + 's';
+                var tick = setInterval(function() {
+                  secsLeft--;
+                  if (secsLeft <= 0) { clearInterval(tick); countdown.textContent = ''; }
+                  else { countdown.textContent = secsLeft + 's'; }
+                }, 1000);
+              }
+              setTimeout(function() {
+                resolve({ ok: true, text: (el.textContent || '').trim().slice(0, 120) });
+              }, readTime);
+            } else {
+              resolve({ ok: true, text: (el.textContent || '').trim().slice(0, 120) });
+            }
           });
         }, 400);
       });
@@ -462,7 +484,8 @@
     run: function(script, opts) {
       opts = opts || {};
       var self = this;
-      var shouldRecord = opts.record !== false; // ON by default
+      var shouldRecord = opts.record !== false;
+      _humanPause = opts.human ? (typeof opts.human === 'number' ? opts.human : 7000) : 0;
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
       var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
@@ -491,6 +514,7 @@
         else if (op === '.') { steps.push({ clear: true, clearNarrate: true }); }
       }
       return self.scene(steps).then(function(r) {
+        _humanPause = 0;
         var result = { ok: true, steps: r.completed };
         if (shouldRecord) {
           result.tape = self.stopRecording();
