@@ -279,7 +279,7 @@ export function generateReplayScript(tape: RecordingEntry[], url: string, person
     `}`,
     ``,
     `(async () => {`,
-    `  const browser = await chromium.launch({ headless: false });`,
+    `  const browser = await chromium.launch({ headless: false, args: ['--disable-infobars'], ignoreDefaultArgs: ['--enable-automation'] });`,
     `  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });`,
     `  const page = await context.newPage();`,
     `  await page.addInitScript(OVERLAY_JS);`,
