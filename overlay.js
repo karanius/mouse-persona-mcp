@@ -831,8 +831,40 @@
       });
     },
 
-    x: function(persona, dsl) {
-      return this.run(dsl, { persona: persona });
+    who: function() {
+      var p = _cfg.persona || {};
+      var n = _cfg.narrator || {};
+      return {
+        name: _persona,
+        role: p.role || '',
+        experience: p.experience || '',
+        voice: p.voice || '',
+        priorities: p.priorities || [],
+        narrator: {
+          audience: n.audience || 'stakeholders',
+          voice: n.voice || '',
+          format: n.format || ''
+        }
+      };
+    },
+
+    loadPersona: function(profile) {
+      if (profile.persona) {
+        if (profile.persona.name) this.setPersona(profile.persona.name);
+        _cfg.persona = profile.persona;
+      }
+      if (profile.narrator) _cfg.narrator = profile.narrator;
+      if (profile.style && profile.style.badge && _label) {
+        var from = profile.style.badge.gradientFrom || CFG_BADGE_FROM;
+        var to = profile.style.badge.gradientTo || CFG_BADGE_TO;
+        _label.style.background = 'linear-gradient(135deg,' + from + ',' + to + ')';
+      }
+      return this.who();
+    },
+
+    x: function(dslOrPersona, maybeDsl) {
+      if (maybeDsl) return this.run(maybeDsl, { persona: dslOrPersona });
+      return this.run(dslOrPersona, {});
     },
 
     d: function(n) {
@@ -842,7 +874,7 @@
 
   // Wrap every public method to record calls when recording is active.
   // Skip recording-control methods to avoid infinite loops.
-  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, x: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
+  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, x: 1, who: 1, loadPersona: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
   var _recordDepth = 0;
   Object.keys(window.__mp).forEach(function(key) {
     if (_noRecord[key] || typeof window.__mp[key] !== 'function') return;

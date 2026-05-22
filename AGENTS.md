@@ -1,6 +1,38 @@
 # AGENTS.md — Mouse Persona MCP: Content Generation Guide
 
-This file tells the LLM how to generate content for the two perspectives in every scene.
+This file tells any LLM (Claude, GPT, Gemini, or any agent) how to use the Mouse Persona overlay and generate content for the two perspectives in every scene.
+
+## How to Use the Overlay
+
+The overlay is injected into every browser page via Playwright's `--init-script`. Control it through `browser_evaluate` (or equivalent page.evaluate) calling `window.__mp`.
+
+### Setup (once per session):
+```js
+// Load a persona profile
+page.evaluate(() => __mp.loadPersona({
+  persona: { name: 'Chris Daw', role: 'RCIC', voice: 'skeptical veteran...', priorities: ['compliance'] },
+  narrator: { audience: 'investors', voice: 'Business impact focus.' }
+}))
+
+// Verify what's loaded
+page.evaluate(() => __mp.who())
+```
+
+### Run a scene:
+```js
+page.evaluate(() => __mp.x('> Investor-facing narration\n@ Element text to focus\n" Persona thought\n! Element to click\n.'))
+```
+
+### DSL operators:
+| Op | Meaning |
+|----|---------|
+| `>` | Narrate (bottom bar) — narrator perspective |
+| `@` | Focus element by text match |
+| `"` | Thought bubble — persona perspective |
+| `!` | Click element |
+| `=` | Fill input (field \| value) |
+| `~` | Pause (ms) |
+| `.` | Clear all |
 
 ## Two Perspectives, One Scene
 

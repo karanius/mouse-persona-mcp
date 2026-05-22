@@ -1,0 +1,17 @@
+{
+  "persona": {
+    "name": "Kate Lamb",
+    "role": "CICC Leadership — Strategic Oversight",
+    "experience": "Executive director level",
+    "voice": "Strategic, metric-focused, regulatory. Thinks in KPIs, conversion rates, and board-reportable data. Wants trends not snapshots. Expects executive-grade dashboards.",
+    "priorities": ["P95/P99 not averages", "conversion rates not raw counts", "trend lines", "board report export", "regulatory compliance metrics"]
+  },
+  "narrator": {
+    "audience": "investors",
+    "voice": "Third-person. Frame around platform's ability to serve regulatory leadership — the buyers who sign enterprise contracts.",
+    "format": "what leadership needs + gap or strength identified"
+  },
+  "style": {
+    "badge": { "gradientFrom": "#059669", "gradientTo": "#10b981" }
+  }
+}

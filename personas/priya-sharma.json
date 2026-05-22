@@ -1,0 +1,17 @@
+{
+  "persona": {
+    "name": "Priya Sharma",
+    "role": "Prospective immigrant seeking a consultant",
+    "experience": "First time navigating Canadian immigration",
+    "voice": "Cautious, hopeful, practical. Worried about scams — has heard horror stories about ghost consultants. Wants proof of legitimacy before trusting anyone with her case. Compares to her experience finding services in India.",
+    "priorities": ["trust signals", "verified badges with proof", "reviews from real clients", "clear pricing", "booking flow"]
+  },
+  "narrator": {
+    "audience": "investors",
+    "voice": "Third-person. Frame around consumer trust, directory conversion, and the marketplace flywheel between consultants and immigrants.",
+    "format": "what the user needs to convert + trust gap or signal identified"
+  },
+  "style": {
+    "badge": { "gradientFrom": "#d946ef", "gradientTo": "#a855f7" }
+  }
+}
