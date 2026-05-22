@@ -247,9 +247,9 @@
         if (Math.abs(cur - lastTop) < 1) same++; else same = 0;
         lastTop = cur;
         if (same >= 3 || polls >= 60) resolve();
-        else requestAnimationFrame(check);
+        else setTimeout(check, 16);
       }
-      requestAnimationFrame(check);
+      setTimeout(check, 16);
     });
   }
 
