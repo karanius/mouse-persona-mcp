@@ -1,6 +1,42 @@
 (function() {
   'use strict';
 
+  // ── Config (injected as __MP_CONFIG__ by overlay.ts, fallback to defaults) ──
+  var _cfg = (typeof __MP_CONFIG__ !== 'undefined') ? __MP_CONFIG__ : {};
+  var _t = _cfg.timing || {};
+  var _s = _cfg.style || {};
+  var _sc = _cfg.scroll || {};
+  var _fb = _t.feedbackWait || {};
+  var _ts = _t.typingSpeed || {};
+  var _badge = _s.badge || {};
+  var _bubble = _s.bubble || {};
+  var _narr = _s.narrator || {};
+
+  var CFG_GLIDE_MS = _t.glideDurationMs || 600;
+  var CFG_COMMENT_GLIDE_MS = _t.commentGlideMs || 400;
+  var CFG_THOUGHT_MS = _t.thoughtDurationMs || 4000;
+  var CFG_HUMAN_MS = _t.humanPauseMs || 7000;
+  var CFG_FEEDBACK_CLICK_MS = _fb.clickMs || 2000;
+  var CFG_FEEDBACK_FILL_MS = _fb.fillMs || 500;
+  var CFG_TYPE_MIN = _ts.minMs || 30;
+  var CFG_TYPE_MAX = _ts.maxMs || 70;
+  var CFG_SAFE_TOP = _sc.safeZoneTop || 0.30;
+  var CFG_SAFE_BOT = _sc.safeZoneBottom || 0.60;
+  var CFG_RIPPLE_COLOR = _s.rippleColor || '#ef4444';
+  var CFG_HIGHLIGHT_COLOR = _s.highlightColor || '#22c55e';
+  var CFG_HIGHLIGHT_MS = _s.highlightDurationMs || 3000;
+  var CFG_BADGE_FROM = _badge.gradientFrom || '#6366f1';
+  var CFG_BADGE_TO = _badge.gradientTo || '#8b5cf6';
+  var CFG_BUBBLE_BG = _bubble.background || 'rgba(15,15,25,0.72)';
+  var CFG_BUBBLE_BORDER = _bubble.borderColor || 'rgba(255,255,255,0.12)';
+  var CFG_BUBBLE_TEXT = _bubble.textColor || 'rgba(255,255,255,0.93)';
+  var CFG_BUBBLE_MAX_W = _bubble.maxWidth || 340;
+  var CFG_BUBBLE_RADIUS = _bubble.borderRadius || 14;
+  var CFG_BUBBLE_FONT = _bubble.fontSize || '13.5px';
+  var CFG_BUBBLE_BLUR = _bubble.blurPx || 20;
+  var CFG_NARR_BG = _narr.background || 'rgba(0,0,0,0.75)';
+  var CFG_NARR_FONT = _narr.fontSize || '16px';
+
   var _cursorX = 0, _cursorY = 0;
   var _persona = '__MP_PERSONA_NAME__';
   var _root, _cursor, _label;
@@ -9,9 +45,9 @@
   var _thoughtTimeout = null;
   var _glideTimerId = null;
   var _glideResolve = null;
-  var _recording = null;   // array when active, null when idle
-  var _recordingStart = 0; // performance.now() at startRecording
-  var _humanPause = 0;     // ms to wait after each thought for human reading
+  var _recording = null;
+  var _recordingStart = 0;
+  var _humanPause = 0;
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -178,7 +214,7 @@
     _label = document.createElement('div');
     _label.id = 'cursor-label';
     _label.textContent = _persona;
-    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:10px;box-shadow:0 2px 8px rgba(99,102,241,0.4);white-space:nowrap;';
+    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:linear-gradient(135deg,' + CFG_BADGE_FROM + ',' + CFG_BADGE_TO + ');color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:10px;box-shadow:0 2px 8px rgba(99,102,241,0.4);white-space:nowrap;';
     _root.appendChild(_label);
 
     var css = document.createElement('style');
@@ -186,15 +222,15 @@
       '* { cursor: none !important; }',
       '@keyframes mp-ripple { 0% { transform:scale(0);opacity:0.7 } 50% { transform:scale(1);opacity:0.3 } 100% { transform:scale(1.5);opacity:0 } }',
       '@keyframes mp-ripple-inner { 0% { transform:scale(0);opacity:1 } 100% { transform:scale(1);opacity:0 } }',
-      '.mp-ripple { position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid #ef4444;pointer-events:none;z-index:100002;animation:mp-ripple 0.7s ease-out forwards; }',
-      '.mp-ripple-inner { position:fixed;width:16px;height:16px;border-radius:50%;background:#ef4444;pointer-events:none;z-index:100002;animation:mp-ripple-inner 0.5s ease-out forwards; }',
+      '.mp-ripple { position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid ' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;animation:mp-ripple 0.7s ease-out forwards; }',
+      '.mp-ripple-inner { position:fixed;width:16px;height:16px;border-radius:50%;background:' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;animation:mp-ripple-inner 0.5s ease-out forwards; }',
       '@keyframes mp-thought-in { 0% { transform:scale(0.95) translateY(6px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }',
-      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:rgba(15,15,25,0.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 18px;box-shadow:0 12px 40px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:13.5px;font-weight:400;font-style:normal;letter-spacing:0.15px;color:rgba(255,255,255,0.93);max-width:340px;line-height:1.55;opacity:0; }',
+      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:' + CFG_BUBBLE_BG + ';backdrop-filter:blur(' + CFG_BUBBLE_BLUR + 'px) saturate(160%);-webkit-backdrop-filter:blur(' + CFG_BUBBLE_BLUR + 'px) saturate(160%);border:1px solid ' + CFG_BUBBLE_BORDER + ';border-radius:' + CFG_BUBBLE_RADIUS + 'px;padding:12px 18px;box-shadow:0 12px 40px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:' + CFG_BUBBLE_FONT + ';font-weight:400;font-style:normal;letter-spacing:0.15px;color:' + CFG_BUBBLE_TEXT + ';max-width:' + CFG_BUBBLE_MAX_W + 'px;line-height:1.55;opacity:0; }',
       '.mp-thought.visible { animation:mp-thought-in 0.3s ease-out forwards; }',
       '.mp-thought .mp-ptr { position:absolute;width:0;height:0;pointer-events:none; }',
-      '.mp-thought .mp-ptr-down { border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid rgba(15,15,25,0.72); }',
-      '.mp-thought .mp-ptr-up { border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid rgba(15,15,25,0.72); }',
-      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:rgba(0,0,0,0.75);color:white;padding:16px 32px;font-family:-apple-system,sans-serif;font-size:16px;font-weight:500;text-align:center;letter-spacing:0.3px;transition:opacity 0.3s ease; }'
+      '.mp-thought .mp-ptr-down { border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid ' + CFG_BUBBLE_BG + '; }',
+      '.mp-thought .mp-ptr-up { border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid ' + CFG_BUBBLE_BG + '; }',
+      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:' + CFG_NARR_BG + ';color:white;padding:16px 32px;font-family:-apple-system,sans-serif;font-size:' + CFG_NARR_FONT + ';font-weight:500;text-align:center;letter-spacing:0.3px;transition:opacity 0.3s ease; }'
     ].join('\n');
 
     (document.head || document.documentElement).appendChild(css);
@@ -228,7 +264,7 @@
   // bubble always fits above or below the cursor. Returns a Promise that
   // resolves only after scroll settles AND element is verified inside the
   // safe zone (with one corrective retry if smooth scroll over/undershot).
-  var _SAFE_TOP = 0.30, _SAFE_BOT = 0.60;
+  var _SAFE_TOP = CFG_SAFE_TOP, _SAFE_BOT = CFG_SAFE_BOT;
 
   function _inSafeZone(el) {
     var vh = window.innerHeight;
@@ -346,7 +382,7 @@
     },
 
     glideTo: function(x, y, duration) {
-      duration = duration || 600;
+      duration = duration || CFG_GLIDE_MS;
       if (_glideTimerId) { clearTimeout(_glideTimerId); _glideTimerId = null; }
       if (_glideResolve) { _glideResolve(); _glideResolve = null; }
       var sx = _cursorX;
@@ -381,13 +417,13 @@
       // AFTER append + forced reflow so Chromium sees a pre-animation
       // state and actually starts the keyframes.
       var r = document.createElement('div');
-      r.style.cssText = 'position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid #ef4444;pointer-events:none;z-index:100002;left:' + (x - 25) + 'px;top:' + (y - 25) + 'px;';
+      r.style.cssText = 'position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid ' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;left:' + (x - 25) + 'px;top:' + (y - 25) + 'px;';
       _root.appendChild(r);
       void r.offsetWidth;
       r.style.animation = 'mp-ripple 0.7s ease-out forwards';
 
       var inner = document.createElement('div');
-      inner.style.cssText = 'position:fixed;width:16px;height:16px;border-radius:50%;background:#ef4444;pointer-events:none;z-index:100002;left:' + (x - 8) + 'px;top:' + (y - 8) + 'px;';
+      inner.style.cssText = 'position:fixed;width:16px;height:16px;border-radius:50%;background:' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;left:' + (x - 8) + 'px;top:' + (y - 8) + 'px;';
       _root.appendChild(inner);
       void inner.offsetWidth;
       inner.style.animation = 'mp-ripple-inner 0.5s ease-out forwards';
@@ -397,9 +433,9 @@
 
     highlight: function(el) {
       if (!el) return;
-      el.style.outline = '3px solid #22c55e';
+      el.style.outline = '3px solid ' + CFG_HIGHLIGHT_COLOR;
       el.style.outlineOffset = '3px';
-      setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, 3000);
+      setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, CFG_HIGHLIGHT_MS);
     },
 
     think: function(text, durationMs) {
@@ -531,7 +567,7 @@
     },
 
     commentOn: function(selectorOrOpts, thought, durationMs) {
-      durationMs = durationMs || 4000;
+      durationMs = durationMs || CFG_THOUGHT_MS;
       var readTime = _humanPause || 0;
       var totalTime = Math.max(durationMs, readTime);
       var el = _resolveTarget(selectorOrOpts);
@@ -540,7 +576,7 @@
       return _scrollForBubble(el).then(function() {
         var r = el.getBoundingClientRect();
         var x = r.left + r.width / 2, y = r.top + r.height / 2;
-        return self.glideTo(x, y, 400);
+        return self.glideTo(x, y, CFG_COMMENT_GLIDE_MS);
       }).then(function() {
         var r = el.getBoundingClientRect();
         var x = r.left + r.width / 2, y = r.top + r.height / 2;
@@ -584,7 +620,7 @@
 
           var _targetRef = s.match ? { match: s.match } : s.text ? { text: s.text } : s.selector || null;
           if (_targetRef && s.thought) {
-            return self.commentOn(_targetRef, s.thought, s.duration || 4000).then(function(r) {
+            return self.commentOn(_targetRef, s.thought, s.duration || CFG_THOUGHT_MS).then(function(r) {
               results.push({ step: i, action: 'commentOn', result: r });
               if (s.pause !== undefined) return new Promise(function(res) { setTimeout(res, s.pause); });
             });
@@ -595,7 +631,7 @@
             if (!el) { results.push({ step: i, action: 'focus', result: { ok: false, error: 'not found: ' + JSON.stringify(_targetRef) } }); return; }
             return _scrollForBubble(el).then(function() {
               var r = el.getBoundingClientRect();
-              return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, 400);
+              return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
               self.ripple();
               self.highlight(el);
@@ -608,13 +644,13 @@
             if (!clickEl) { results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
             return _scrollForBubble(clickEl).then(function() {
               var cr = clickEl.getBoundingClientRect();
-              return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, 400);
+              return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
               self.ripple();
               self.highlight(clickEl);
               var beforeClick = performance.now();
               clickEl.click();
-              var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : 2000;
+              var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
               if (fbWait > 0) {
                 return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
                   results.push({ step: i, action: 'click', result: { ok: true }, feedback: fb });
@@ -644,7 +680,7 @@
             }
             return _scrollForBubble(fillEl).then(function() {
               var fr = fillEl.getBoundingClientRect();
-              return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, 400);
+              return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
               self.ripple();
               self.highlight(fillEl);
@@ -661,7 +697,7 @@
                   if (charIdx >= chars.length) {
                     fillEl.dispatchEvent(new Event('change', { bubbles: true }));
                     var beforeFill = performance.now();
-                    var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
+                    var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
                     if (fbWaitFill > 0) {
                       _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
                         results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
@@ -681,7 +717,7 @@
                     nativeSetter.call(fillEl, partial);
                   }
                   fillEl.dispatchEvent(new Event('input', { bubbles: true }));
-                  setTimeout(typeChar, 30 + Math.random() * 40);
+                  setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
                 }
                 typeChar();
               });
@@ -689,7 +725,7 @@
           }
 
           if (s.think) {
-            self.think(s.think, s.duration || 4000);
+            self.think(s.think, s.duration || CFG_THOUGHT_MS);
             results.push({ step: i, action: 'think' });
           }
 
@@ -755,7 +791,7 @@
       opts = opts || {};
       var self = this;
       var shouldRecord = opts.record !== false;
-      _humanPause = opts.human === false ? 0 : (typeof opts.human === 'number' ? opts.human : 7000);
+      _humanPause = opts.human === false ? 0 : (typeof opts.human === 'number' ? opts.human : CFG_HUMAN_MS);
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
       var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
