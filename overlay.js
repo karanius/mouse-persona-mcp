@@ -389,12 +389,57 @@
   }
 
   function _resolveTarget(opts) {
-    // opts can be: string (selector), {selector:...}, {text:...}, or {match:...}
     if (typeof opts === 'string') return document.querySelector(opts);
     if (opts.selector) return document.querySelector(opts.selector);
     var matchStr = opts.text || opts.match;
     if (matchStr) return _findByText(matchStr);
     return null;
+  }
+
+  function _cursorClick(x, y) {
+    var target = document.elementFromPoint(x, y);
+    if (!target) target = document.body;
+    var opts = { bubbles: true, cancelable: true, composed: true, view: window, clientX: x, clientY: y, button: 0 };
+    target.dispatchEvent(new MouseEvent('mousemove', opts));
+    target.dispatchEvent(new MouseEvent('mousedown', opts));
+    target.dispatchEvent(new MouseEvent('mouseup', opts));
+    target.dispatchEvent(new MouseEvent('click', opts));
+  }
+
+  function _cursorType(el, text) {
+    var chars = text.split('');
+    var isSelect = el instanceof HTMLSelectElement;
+    var proto = el instanceof HTMLTextAreaElement
+      ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    var nativeSetter = isSelect ? null : Object.getOwnPropertyDescriptor(proto, 'value').set;
+    var charIdx = 0;
+    return new Promise(function(resolve) {
+      function typeChar() {
+        if (charIdx >= chars.length) {
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          resolve();
+          return;
+        }
+        var ch = chars[charIdx];
+        charIdx++;
+        var partial = chars.slice(0, charIdx).join('');
+        var kOpts = { bubbles: true, cancelable: true, key: ch, code: 'Key' + ch.toUpperCase(), charCode: ch.charCodeAt(0), keyCode: ch.charCodeAt(0) };
+        el.dispatchEvent(new KeyboardEvent('keydown', kOpts));
+        el.dispatchEvent(new KeyboardEvent('keypress', kOpts));
+        if (isSelect) {
+          el.value = partial;
+        } else {
+          var instDesc = Object.getOwnPropertyDescriptor(el, 'value');
+          if (instDesc) delete el.value;
+          nativeSetter.call(el, partial);
+          if (instDesc) Object.defineProperty(el, 'value', instDesc);
+        }
+        el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ch }));
+        el.dispatchEvent(new KeyboardEvent('keyup', kOpts));
+        setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
+      }
+      typeChar();
+    });
   }
 
   window.__mp = {
@@ -678,7 +723,7 @@
               var headingBefore = hBefore ? hBefore.textContent.trim() : null;
               var beforeClick = performance.now();
               _mpClickInProgress = true;
-              clickEl.click();
+              _cursorClick(_cursorX, _cursorY);
               _mpClickInProgress = false;
               var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
               if (fbWait > 0) {
@@ -715,72 +760,20 @@
               return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
               self.highlight(fillEl);
+              _cursorClick(_cursorX, _cursorY);
               fillEl.focus();
-              var chars = (s.value || '').split('');
-              var isSelect = fillEl instanceof HTMLSelectElement;
-              var proto = fillEl instanceof HTMLTextAreaElement
-                ? HTMLTextAreaElement.prototype
-                : HTMLInputElement.prototype;
-              var nativeSetter = isSelect ? null : Object.getOwnPropertyDescriptor(proto, 'value').set;
-              var charIdx = 0;
-              return new Promise(function(resolve) {
-                function typeChar() {
-                  if (charIdx >= chars.length) {
-                    fillEl.dispatchEvent(new Event('change', { bubbles: true }));
-                    var beforeFill = performance.now();
-                    var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
-                    var fillVerify = _verifyFill(fillEl, s.value || '');
-                    if (fbWaitFill > 0) {
-                      _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
-                        results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, feedback: fb, verify: fillVerify });
-                        resolve();
-                      });
-                    } else {
-                      results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, verify: fillVerify });
-                      resolve();
-                    }
-                    return;
-                  }
-                  var ch = chars[charIdx];
-                  charIdx++;
-                  var partial = chars.slice(0, charIdx).join('');
-                  if (isSelect) {
-                    fillEl.value = partial;
-                    fillEl.dispatchEvent(new Event('input', { bubbles: true }));
-                  } else {
-                    // React 16-18+ installs an instance-level 'value' property
-                    // descriptor on controlled inputs that shadows the prototype
-                    // setter. Its internal _valueTracker caches the last-known
-                    // value and compares on re-render; if the tracker value
-                    // matches the DOM value, React skips the onChange handler.
-                    //
-                    // Strategy: delete the instance descriptor so the prototype
-                    // setter runs unintercepted, then React re-installs its
-                    // descriptor on the next render and sees the new value as a
-                    // genuine user change.
-                    var instanceDescriptor = Object.getOwnPropertyDescriptor(fillEl, 'value');
-                    if (instanceDescriptor) {
-                      delete fillEl.value;
-                    }
-                    nativeSetter.call(fillEl, partial);
-                    // Re-install React's descriptor if we removed it, so React
-                    // can track subsequent changes normally.
-                    if (instanceDescriptor) {
-                      Object.defineProperty(fillEl, 'value', instanceDescriptor);
-                    }
-                    // Use InputEvent with proper inputType — React 17+ synthetic
-                    // event system checks event.type === 'input' AND expects
-                    // InputEvent (not plain Event) for full compatibility.
-                    fillEl.dispatchEvent(new InputEvent('input', {
-                      bubbles: true,
-                      inputType: 'insertText',
-                      data: ch
-                    }));
-                  }
-                  setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
-                }
-                typeChar();
-              });
+              return _cursorType(fillEl, s.value || '');
+            }).then(function() {
+              var beforeFill = performance.now();
+              var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
+              var fillVerify = _verifyFill(fillEl, s.value || '');
+              if (fbWaitFill > 0) {
+                return _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
+                  results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, feedback: fb, verify: fillVerify });
+                });
+              } else {
+                results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, verify: fillVerify });
+              }
             });
           }
 
