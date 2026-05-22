@@ -224,15 +224,50 @@
     window.__mp.moveCursor(_cursorX, _cursorY);
   }
 
-  // Scroll element into the lower portion of the viewport so there is
-  // always headroom above the cursor for the thought bubble.
+  // Scroll element into the safe zone (30%-60% of viewport) so the thought
+  // bubble always fits above or below the cursor. Returns a Promise that
+  // resolves only after scroll settles AND element is verified inside the
+  // safe zone (with one corrective retry if smooth scroll over/undershot).
+  var _SAFE_TOP = 0.30, _SAFE_BOT = 0.60;
+
+  function _inSafeZone(el) {
+    var vh = window.innerHeight;
+    var r = el.getBoundingClientRect();
+    var mid = r.top + r.height / 2;
+    return mid >= vh * _SAFE_TOP && mid <= vh * _SAFE_BOT;
+  }
+
+  function _waitScrollStable(el) {
+    return new Promise(function(resolve) {
+      var lastTop = el.getBoundingClientRect().top;
+      var same = 0, polls = 0;
+      function check() {
+        polls++;
+        var cur = el.getBoundingClientRect().top;
+        if (Math.abs(cur - lastTop) < 1) same++; else same = 0;
+        lastTop = cur;
+        if (same >= 3 || polls >= 60) resolve();
+        else requestAnimationFrame(check);
+      }
+      requestAnimationFrame(check);
+    });
+  }
+
   function _scrollForBubble(el) {
-    var rect = el.getBoundingClientRect();
-    var targetY = window.innerHeight * 0.65;
-    var scrollDelta = rect.top - targetY;
-    if (Math.abs(scrollDelta) > 10) {
-      window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
-    }
+    if (_inSafeZone(el)) return Promise.resolve();
+    var vh = window.innerHeight;
+    var targetY = vh * 0.40;
+    var r = el.getBoundingClientRect();
+    var delta = (r.top + r.height / 2) - targetY;
+    if (Math.abs(delta) > 5) window.scrollBy({ top: delta, behavior: 'smooth' });
+    return _waitScrollStable(el).then(function() {
+      if (!_inSafeZone(el)) {
+        var r2 = el.getBoundingClientRect();
+        var d2 = (r2.top + r2.height / 2) - targetY;
+        if (Math.abs(d2) > 5) window.scrollBy({ top: d2, behavior: 'smooth' });
+        return _waitScrollStable(el);
+      }
+    });
   }
 
   var _MATCH_TAGS = 'a,h1,h2,h3,h4,h5,h6,button,li,td,th,p,span,label,[role="link"],[role="button"]';
@@ -463,6 +498,10 @@
       if (_label) _label.textContent = name;
     },
 
+    setHuman: function(ms) {
+      _humanPause = (ms === false || ms === 0) ? 0 : (typeof ms === 'number' ? ms : 7000);
+    },
+
     clear: function() {
       if (_thoughtTimerId) { clearTimeout(_thoughtTimerId); _thoughtTimerId = null; }
       if (_thoughtTimeout) { clearTimeout(_thoughtTimeout); _thoughtTimeout = null; }
@@ -497,38 +536,38 @@
       var totalTime = Math.max(durationMs, readTime);
       var el = _resolveTarget(selectorOrOpts);
       if (!el) return Promise.resolve({ ok: false, error: 'not found: ' + JSON.stringify(selectorOrOpts) });
-      _scrollForBubble(el);
       var self = this;
-      return new Promise(function(resolve) {
-        setTimeout(function() {
-          var r = el.getBoundingClientRect();
-          var x = r.left + r.width / 2, y = r.top + r.height / 2;
-          self.glideTo(x, y, 400).then(function() {
-            self.ripple(x, y);
-            self.highlight(el);
-            self.think(thought, totalTime);
-            if (readTime > 0) {
-              var bubble = document.getElementById('mp-thought');
-              if (bubble) {
-                var countdown = document.createElement('span');
-                countdown.style.cssText = 'display:block;margin-top:6px;font-size:11px;opacity:0.5;font-family:-apple-system,sans-serif;';
-                bubble.appendChild(countdown);
-                var secsLeft = Math.ceil(readTime / 1000);
-                countdown.textContent = secsLeft + 's';
-                var tick = setInterval(function() {
-                  secsLeft--;
-                  if (secsLeft <= 0) { clearInterval(tick); countdown.textContent = ''; }
-                  else { countdown.textContent = secsLeft + 's'; }
-                }, 1000);
-              }
-              setTimeout(function() {
-                resolve({ ok: true, text: (el.textContent || '').trim().slice(0, 120) });
-              }, readTime);
-            } else {
+      return _scrollForBubble(el).then(function() {
+        var r = el.getBoundingClientRect();
+        var x = r.left + r.width / 2, y = r.top + r.height / 2;
+        return self.glideTo(x, y, 400);
+      }).then(function() {
+        var r = el.getBoundingClientRect();
+        var x = r.left + r.width / 2, y = r.top + r.height / 2;
+        self.ripple(x, y);
+        self.highlight(el);
+        self.think(thought, totalTime);
+        if (readTime > 0) {
+          var bubble = document.getElementById('mp-thought');
+          if (bubble) {
+            var countdown = document.createElement('span');
+            countdown.style.cssText = 'display:block;margin-top:6px;font-size:11px;opacity:0.5;font-family:-apple-system,sans-serif;';
+            bubble.appendChild(countdown);
+            var secsLeft = Math.ceil(readTime / 1000);
+            countdown.textContent = secsLeft + 's';
+            var tick = setInterval(function() {
+              secsLeft--;
+              if (secsLeft <= 0) { clearInterval(tick); countdown.textContent = ''; }
+              else { countdown.textContent = secsLeft + 's'; }
+            }, 1000);
+          }
+          return new Promise(function(resolve) {
+            setTimeout(function() {
               resolve({ ok: true, text: (el.textContent || '').trim().slice(0, 120) });
-            }
+            }, readTime);
           });
-        }, 400);
+        }
+        return { ok: true, text: (el.textContent || '').trim().slice(0, 120) };
       });
     },
 
@@ -554,44 +593,35 @@
           if (_targetRef && !s.thought) {
             var el = _resolveTarget(_targetRef);
             if (!el) { results.push({ step: i, action: 'focus', result: { ok: false, error: 'not found: ' + JSON.stringify(_targetRef) } }); return; }
-            _scrollForBubble(el);
-            return new Promise(function(resolve) {
-              setTimeout(function() {
-                var r = el.getBoundingClientRect();
-                self.glideTo(r.left + r.width / 2, r.top + r.height / 2, 400).then(function() {
-                  self.ripple();
-                  self.highlight(el);
-                  results.push({ step: i, action: 'focus', result: { ok: true } });
-                  resolve();
-                });
-              }, 400);
+            return _scrollForBubble(el).then(function() {
+              var r = el.getBoundingClientRect();
+              return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, 400);
+            }).then(function() {
+              self.ripple();
+              self.highlight(el);
+              results.push({ step: i, action: 'focus', result: { ok: true } });
             });
           }
 
           if (s.click) {
             var clickEl = _resolveTarget(s.click);
             if (!clickEl) { results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
-            _scrollForBubble(clickEl);
-            return new Promise(function(resolve) {
-              setTimeout(function() {
-                var cr = clickEl.getBoundingClientRect();
-                self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, 400).then(function() {
-                  self.ripple();
-                  self.highlight(clickEl);
-                  var beforeClick = performance.now();
-                  clickEl.click();
-                  var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : 2000;
-                  if (fbWait > 0) {
-                    _waitForFeedback(beforeClick, fbWait).then(function(fb) {
-                      results.push({ step: i, action: 'click', result: { ok: true }, feedback: fb });
-                      resolve();
-                    });
-                  } else {
-                    results.push({ step: i, action: 'click', result: { ok: true } });
-                    resolve();
-                  }
+            return _scrollForBubble(clickEl).then(function() {
+              var cr = clickEl.getBoundingClientRect();
+              return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, 400);
+            }).then(function() {
+              self.ripple();
+              self.highlight(clickEl);
+              var beforeClick = performance.now();
+              clickEl.click();
+              var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : 2000;
+              if (fbWait > 0) {
+                return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
+                  results.push({ step: i, action: 'click', result: { ok: true }, feedback: fb });
                 });
-              }, 400);
+              } else {
+                results.push({ step: i, action: 'click', result: { ok: true } });
+              }
             });
           }
 
@@ -612,50 +642,49 @@
               if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
               if (_f) fillEl = _f;
             }
-            _scrollForBubble(fillEl);
-            return new Promise(function(resolve) {
-              setTimeout(function() {
-                var fr = fillEl.getBoundingClientRect();
-                self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, 400).then(function() {
-                  self.ripple();
-                  self.highlight(fillEl);
-                  fillEl.focus();
-                  var chars = (s.value || '').split('');
-                  var isSelect = fillEl instanceof HTMLSelectElement;
-                  var proto = fillEl instanceof HTMLTextAreaElement
-                    ? HTMLTextAreaElement.prototype
-                    : HTMLInputElement.prototype;
-                  var nativeSetter = isSelect ? null : Object.getOwnPropertyDescriptor(proto, 'value').set;
-                  var charIdx = 0;
-                  function typeChar() {
-                    if (charIdx >= chars.length) {
-                      fillEl.dispatchEvent(new Event('change', { bubbles: true }));
-                      var beforeFill = performance.now();
-                      var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
-                      if (fbWaitFill > 0) {
-                        _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
-                          results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
-                          resolve();
-                        });
-                      } else {
-                        results.push({ step: i, action: 'fill', result: { ok: true } });
+            return _scrollForBubble(fillEl).then(function() {
+              var fr = fillEl.getBoundingClientRect();
+              return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, 400);
+            }).then(function() {
+              self.ripple();
+              self.highlight(fillEl);
+              fillEl.focus();
+              var chars = (s.value || '').split('');
+              var isSelect = fillEl instanceof HTMLSelectElement;
+              var proto = fillEl instanceof HTMLTextAreaElement
+                ? HTMLTextAreaElement.prototype
+                : HTMLInputElement.prototype;
+              var nativeSetter = isSelect ? null : Object.getOwnPropertyDescriptor(proto, 'value').set;
+              var charIdx = 0;
+              return new Promise(function(resolve) {
+                function typeChar() {
+                  if (charIdx >= chars.length) {
+                    fillEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    var beforeFill = performance.now();
+                    var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
+                    if (fbWaitFill > 0) {
+                      _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
+                        results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
                         resolve();
-                      }
-                      return;
-                    }
-                    charIdx++;
-                    var partial = chars.slice(0, charIdx).join('');
-                    if (isSelect) {
-                      fillEl.value = partial;
+                      });
                     } else {
-                      nativeSetter.call(fillEl, partial);
+                      results.push({ step: i, action: 'fill', result: { ok: true } });
+                      resolve();
                     }
-                    fillEl.dispatchEvent(new Event('input', { bubbles: true }));
-                    setTimeout(typeChar, 30 + Math.random() * 40);
+                    return;
                   }
-                  typeChar();
-                });
-              }, 400);
+                  charIdx++;
+                  var partial = chars.slice(0, charIdx).join('');
+                  if (isSelect) {
+                    fillEl.value = partial;
+                  } else {
+                    nativeSetter.call(fillEl, partial);
+                  }
+                  fillEl.dispatchEvent(new Event('input', { bubbles: true }));
+                  setTimeout(typeChar, 30 + Math.random() * 40);
+                }
+                typeChar();
+              });
             });
           }
 
