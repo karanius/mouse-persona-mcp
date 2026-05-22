@@ -48,6 +48,7 @@
   var _recording = null;
   var _recordingStart = 0;
   var _humanPause = 0;
+  var _mpClickInProgress = false;
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -236,6 +237,7 @@
     (document.head || document.documentElement).appendChild(css);
 
     document.addEventListener('click', function(e) {
+      if (_mpClickInProgress) return;
       if (e.target && e.target !== document && e.target !== document.body) {
         var r = e.target.getBoundingClientRect();
         var x = r.left + r.width / 2, y = r.top + r.height / 2;
@@ -250,8 +252,6 @@
         var r = e.target.getBoundingClientRect();
         var x = r.left + r.width / 2, y = r.top + r.height / 2;
         window.__mp.moveCursor(x, y);
-        window.__mp.ripple(x, y);
-        window.__mp.highlight(e.target);
       }
     }, true);
 
@@ -633,7 +633,6 @@
               var r = el.getBoundingClientRect();
               return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
-              self.ripple();
               self.highlight(el);
               results.push({ step: i, action: 'focus', result: { ok: true } });
             });
@@ -646,10 +645,14 @@
               var cr = clickEl.getBoundingClientRect();
               return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
-              self.ripple();
+              var cr = clickEl.getBoundingClientRect();
+              var cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+              self.ripple(cx, cy);
               self.highlight(clickEl);
               var beforeClick = performance.now();
+              _mpClickInProgress = true;
               clickEl.click();
+              _mpClickInProgress = false;
               var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
               if (fbWait > 0) {
                 return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
@@ -682,7 +685,6 @@
               var fr = fillEl.getBoundingClientRect();
               return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
             }).then(function() {
-              self.ripple();
               self.highlight(fillEl);
               fillEl.focus();
               var chars = (s.value || '').split('');
