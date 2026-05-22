@@ -239,7 +239,7 @@
     _label = document.createElement('div');
     _label.id = 'cursor-label';
     _label.textContent = _persona;
-    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px) saturate(180%);-webkit-backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(99,102,241,0.2);color:#6366f1;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);white-space:nowrap;';
+    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:rgba(245,245,248,0.92);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(99,102,241,0.15);color:#6366f1;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);white-space:nowrap;';
     _root.appendChild(_label);
 
     var css = document.createElement('style');
@@ -250,12 +250,12 @@
       '.mp-ripple { position:fixed;width:50px;height:50px;border-radius:50%;border:2px solid rgba(99,102,241,0.5);pointer-events:none;z-index:100002;animation:mp-ripple 0.7s ease-out forwards; }',
       '.mp-ripple-inner { position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(99,102,241,0.6);pointer-events:none;z-index:100002;animation:mp-ripple-inner 0.5s ease-out forwards; }',
       '@keyframes mp-thought-in { 0% { transform:scale(0.97) translateY(4px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }',
-      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:rgba(255,255,255,0.88);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:12px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.5);font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",sans-serif;font-size:13.5px;font-weight:400;font-style:normal;letter-spacing:0.1px;color:#1a1a2e;max-width:360px;line-height:1.55;opacity:0; }',
+      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:rgba(245,245,248,0.92);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(0,0,0,0.06);border-radius:16px;padding:14px 18px;box-shadow:0 4px 24px rgba(0,0,0,0.1),0 1px 3px rgba(0,0,0,0.06);font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",sans-serif;font-size:13.5px;font-weight:400;font-style:normal;letter-spacing:0.1px;color:#2c2c2e;max-width:360px;line-height:1.55;opacity:0;overflow:visible; }',
       '.mp-thought.visible { animation:mp-thought-in 0.25s cubic-bezier(0.2,0,0,1) forwards; }',
-      '.mp-thought .mp-ptr { position:absolute;width:0;height:0;pointer-events:none; }',
-      '.mp-thought .mp-ptr-down { border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid rgba(255,255,255,0.88); }',
-      '.mp-thought .mp-ptr-up { border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid rgba(255,255,255,0.88); }',
-      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:rgba(255,255,255,0.88);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border-top:1px solid rgba(0,0,0,0.06);color:#1a1a2e;padding:12px 32px;font-family:-apple-system,\"SF Pro Text\",sans-serif;font-size:14px;font-weight:500;text-align:center;letter-spacing:0.2px;box-shadow:0 -4px 20px rgba(0,0,0,0.06);transition:opacity 0.3s ease; }'
+      '.mp-thought .mp-ptr { position:absolute;pointer-events:none;width:14px;height:14px;background:rgba(245,245,248,0.92);border:1px solid rgba(0,0,0,0.06);border-top:none;border-left:none;transform:rotate(45deg);box-shadow:2px 2px 4px rgba(0,0,0,0.04); }',
+      '.mp-thought .mp-ptr-down { }',
+      '.mp-thought .mp-ptr-up { transform:rotate(-135deg); }',
+      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:rgba(245,245,248,0.92);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-top:1px solid rgba(0,0,0,0.06);color:#2c2c2e;padding:12px 32px;font-family:-apple-system,\"SF Pro Text\",sans-serif;font-size:14px;font-weight:500;text-align:center;letter-spacing:0.2px;box-shadow:0 -4px 20px rgba(0,0,0,0.06);transition:opacity 0.3s ease; }'
     ].join('\n');
 
     (document.head || document.documentElement).appendChild(css);
@@ -565,10 +565,10 @@
         ptr.style.left = ptrLeft + 'px';
         if (bubbleAbove) {
           ptr.className = 'mp-ptr mp-ptr-down';
-          ptr.style.top = (cachedH - 1) + 'px';
+          ptr.style.top = (cachedH - 8) + 'px';
         } else {
           ptr.className = 'mp-ptr mp-ptr-up';
-          ptr.style.top = '-7px';
+          ptr.style.top = '-6px';
         }
         _thoughtTimerId = setTimeout(positionBubble, 100);
       }
