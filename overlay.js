@@ -148,6 +148,30 @@
     };
   }
 
+  function _verifyFill(el, expected) {
+    var actual = el.value;
+    var validationError = null;
+    if (el.getAttribute('aria-invalid') === 'true') validationError = 'aria-invalid';
+    if (!validationError) {
+      var cls = (el.className || '').toString();
+      var m = cls.match(/\b\S*(error|invalid)\S*\b/i);
+      if (m) validationError = m[0];
+    }
+    return { value: actual, expected: expected, match: actual === expected, validationError: validationError };
+  }
+
+  function _verifyClick(el, urlBefore, headingBefore) {
+    var wasDisabled = !!(el.disabled || el.getAttribute('aria-disabled') === 'true');
+    var urlChanged = location.href !== urlBefore;
+    var h = document.querySelector('h1,h2');
+    var newHeading = null;
+    if (h) {
+      var cur = h.textContent.trim();
+      if (cur !== headingBefore) newHeading = cur;
+    }
+    return { wasDisabled: wasDisabled, urlChanged: urlChanged, newHeading: newHeading };
+  }
+
   function _waitForFeedback(sinceTs, waitMs) {
     return new Promise(function(resolve) {
       setTimeout(function() { resolve(_snapshotFeedback(sinceTs)); }, waitMs || 2000);
@@ -649,6 +673,9 @@
               var cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
               self.ripple(cx, cy);
               self.highlight(clickEl);
+              var urlBefore = location.href;
+              var hBefore = document.querySelector('h1,h2');
+              var headingBefore = hBefore ? hBefore.textContent.trim() : null;
               var beforeClick = performance.now();
               _mpClickInProgress = true;
               clickEl.click();
@@ -656,10 +683,12 @@
               var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
               if (fbWait > 0) {
                 return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
-                  results.push({ step: i, action: 'click', result: { ok: true }, feedback: fb });
+                  var verify = _verifyClick(clickEl, urlBefore, headingBefore);
+                  results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, feedback: fb, verify: verify });
                 });
               } else {
-                results.push({ step: i, action: 'click', result: { ok: true } });
+                var verify = _verifyClick(clickEl, urlBefore, headingBefore);
+                results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, verify: verify });
               }
             });
           }
@@ -700,25 +729,54 @@
                     fillEl.dispatchEvent(new Event('change', { bubbles: true }));
                     var beforeFill = performance.now();
                     var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
+                    var fillVerify = _verifyFill(fillEl, s.value || '');
                     if (fbWaitFill > 0) {
                       _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
-                        results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
+                        results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, feedback: fb, verify: fillVerify });
                         resolve();
                       });
                     } else {
-                      results.push({ step: i, action: 'fill', result: { ok: true } });
+                      results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, verify: fillVerify });
                       resolve();
                     }
                     return;
                   }
+                  var ch = chars[charIdx];
                   charIdx++;
                   var partial = chars.slice(0, charIdx).join('');
                   if (isSelect) {
                     fillEl.value = partial;
+                    fillEl.dispatchEvent(new Event('input', { bubbles: true }));
                   } else {
+                    // React 16-18+ installs an instance-level 'value' property
+                    // descriptor on controlled inputs that shadows the prototype
+                    // setter. Its internal _valueTracker caches the last-known
+                    // value and compares on re-render; if the tracker value
+                    // matches the DOM value, React skips the onChange handler.
+                    //
+                    // Strategy: delete the instance descriptor so the prototype
+                    // setter runs unintercepted, then React re-installs its
+                    // descriptor on the next render and sees the new value as a
+                    // genuine user change.
+                    var instanceDescriptor = Object.getOwnPropertyDescriptor(fillEl, 'value');
+                    if (instanceDescriptor) {
+                      delete fillEl.value;
+                    }
                     nativeSetter.call(fillEl, partial);
+                    // Re-install React's descriptor if we removed it, so React
+                    // can track subsequent changes normally.
+                    if (instanceDescriptor) {
+                      Object.defineProperty(fillEl, 'value', instanceDescriptor);
+                    }
+                    // Use InputEvent with proper inputType — React 17+ synthetic
+                    // event system checks event.type === 'input' AND expects
+                    // InputEvent (not plain Event) for full compatibility.
+                    fillEl.dispatchEvent(new InputEvent('input', {
+                      bubbles: true,
+                      inputType: 'insertText',
+                      data: ch
+                    }));
                   }
-                  fillEl.dispatchEvent(new Event('input', { bubbles: true }));
                   setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
                 }
                 typeChar();
@@ -734,7 +792,17 @@
           if (s.wait) return new Promise(function(res) { setTimeout(res, s.wait); });
         });
       });
-      return chain.then(function() { return { completed: results.length, results: results }; });
+      return chain.then(function() {
+        var drifts = [];
+        for (var d = 0; d < results.length; d++) {
+          var v = results[d].verify;
+          if (!v) continue;
+          if (v.match === false || v.wasDisabled === true) {
+            drifts.push({ step: results[d].step, action: results[d].action, verify: v });
+          }
+        }
+        return { completed: results.length, results: results, drifts: drifts };
+      });
     },
 
     startRecording: function() {
@@ -823,7 +891,7 @@
       }
       return self.scene(steps).then(function(r) {
         _humanPause = 0;
-        var result = { ok: true, steps: r.completed };
+        var result = { ok: true, steps: r.completed, drifts: r.drifts || [] };
         if (shouldRecord) {
           result.tape = self.stopRecording();
         }
