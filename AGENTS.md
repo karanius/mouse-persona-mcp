@@ -1,6 +1,6 @@
-# AGENTS.md — Mouse Persona MCP: Content Generation Guide
+# AGENTS.md — Cursor Persona MCP: Content Generation Guide
 
-This file tells any LLM (Claude, GPT, Gemini, or any agent) how to use the Mouse Persona overlay and generate content for the two perspectives in every scene.
+This file tells any LLM (Claude, GPT, Gemini, or any agent) how to use the Cursor Persona overlay and generate content for the two perspectives in every scene.
 
 ## How to Use the Overlay
 

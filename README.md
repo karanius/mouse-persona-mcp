@@ -1,8 +1,8 @@
-# Mouse Persona MCP
+# Cursor Persona MCP
 
 Visual cursor controller for LLM-driven browser demos. Shows a custom cursor, persona label, thought bubbles, click ripples, and green highlights — all persistent across page navigations.
 
-Works alongside the [Playwright MCP](https://github.com/microsoft/playwright-mcp). Playwright handles browser automation. Mouse Persona handles what the audience **sees**.
+Works alongside the [Playwright MCP](https://github.com/microsoft/playwright-mcp). Playwright handles browser automation. Cursor Persona handles what the audience **sees**.
 
 ## Tools
 
@@ -22,9 +22,9 @@ Works alongside the [Playwright MCP](https://github.com/microsoft/playwright-mcp
 ```json
 {
   "mcpServers": {
-    "mouse-persona": {
+    "cursor-persona": {
       "command": "node",
-      "args": ["/path/to/mouse-persona-mcp/dist/index.js", "--cdp-port", "9222"]
+      "args": ["/path/to/cursor-persona-mcp/dist/index.js", "--cdp-port", "9222"]
     }
   }
 }

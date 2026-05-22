@@ -1,4 +1,4 @@
-# Mouse Persona MCP
+# Cursor Persona MCP
 
 Visual persona overlay for browser demos. Injected via Playwright's `--init-script`. All commands go through `browser_evaluate` calling `window.__mp`.
 

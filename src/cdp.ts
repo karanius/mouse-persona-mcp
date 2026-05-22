@@ -25,7 +25,7 @@ export async function connect(port: number = 9222): Promise<void> {
   const c = await CDP({ port });
   try {
     c.on("disconnect", () => {
-      console.error("[mouse-persona] Chrome disconnected, will reconnect on next tool call");
+      console.error("[cursor-persona] Chrome disconnected, will reconnect on next tool call");
       client = null;
       scriptId = null;
     });
@@ -46,11 +46,11 @@ export async function connect(port: number = 9222): Promise<void> {
       expression: "typeof window.__mp === 'object'",
     });
     if (check.result?.value !== true) {
-      console.error("[mouse-persona] Overlay injection failed — window.__mp not found (CSP or sandbox may be blocking)");
+      console.error("[cursor-persona] Overlay injection failed — window.__mp not found (CSP or sandbox may be blocking)");
     }
 
     client = c;
-    console.error(`[mouse-persona] Connected to Chrome on port ${port}`);
+    console.error(`[cursor-persona] Connected to Chrome on port ${port}`);
   } catch (e) {
     try { c.close(); } catch {}
     throw e;
@@ -258,7 +258,7 @@ export function generateReplayScript(tape: RecordingEntry[], url: string, person
   const overlaySource = getOverlayScript(persona || currentPersona);
 
   const lines: string[] = [
-    `// Mouse Persona recording — generated ${new Date().toISOString()}`,
+    `// Cursor Persona recording — generated ${new Date().toISOString()}`,
     `// Replay:  node this-file.js [--speed N]`,
     `// Example: node recording.js --speed 2`,
     `//`,

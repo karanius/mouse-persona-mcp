@@ -158,7 +158,7 @@
     if (_injected) return;
     if (!document.body) return;
 
-    var existingRoot = document.getElementById('mouse-overlay-root');
+    var existingRoot = document.getElementById('cursor-overlay-root');
     if (existingRoot) {
       // Re-adopt existing DOM created by a prior injection (e.g. CDP double-eval).
       // Without this, _root stays undefined and think() silently no-ops.
@@ -171,7 +171,7 @@
     _injected = true;
 
     _root = document.createElement('div');
-    _root.id = 'mouse-overlay-root';
+    _root.id = 'cursor-overlay-root';
     _root.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
     document.body.appendChild(_root);
 
