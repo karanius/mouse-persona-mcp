@@ -9,6 +9,8 @@
   var _thoughtTimeout = null;
   var _glideTimerId = null;
   var _glideResolve = null;
+  var _recording = null;   // array when active, null when idle
+  var _recordingStart = 0; // performance.now() at startRecording
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -352,8 +354,116 @@
         });
       });
       return chain.then(function() { return { completed: results.length, results: results }; });
+    },
+
+    startRecording: function() {
+      _recording = [];
+      _recordingStart = performance.now();
+      return 'recording';
+    },
+
+    stopRecording: function() {
+      var tape = _recording || [];
+      _recording = null;
+      _recordingStart = 0;
+      return tape;
+    },
+
+    getRecording: function() {
+      return _recording ? _recording.slice() : [];
+    },
+
+    replay: function(tape, speed) {
+      speed = speed || 1;
+      var self = this;
+      var chain = Promise.resolve();
+      var prevT = 0;
+      tape.forEach(function(entry) {
+        chain = chain.then(function() {
+          var delay = (entry.t - prevT) / speed;
+          prevT = entry.t;
+          return new Promise(function(resolve) {
+            setTimeout(function() {
+              var result = self[entry.fn].apply(self, entry.args);
+              if (result && typeof result.then === 'function') {
+                result.then(resolve);
+              } else {
+                resolve();
+              }
+            }, Math.max(0, delay));
+          });
+        });
+      });
+      return chain;
+    },
+
+    toScript: function(tape, url) {
+      // Client-side script generation (no overlay bundling — use server-side
+      // persona_record_save for self-contained scripts with bundled overlay).
+      tape = tape || _recording || [];
+      return JSON.stringify({ tape: tape, url: url || location.href, ts: new Date().toISOString() });
+    },
+
+    run: function(script, opts) {
+      opts = opts || {};
+      var self = this;
+      var shouldRecord = opts.record !== false; // ON by default
+      if (opts.persona) self.setPersona(opts.persona);
+      if (shouldRecord) self.startRecording();
+      var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+      var steps = [];
+      var currentTarget = null;
+      for (var i = 0; i < lines.length; i++) {
+        var ln = lines[i];
+        var op = ln[0], body = ln.slice(1).trim();
+        if (op === '>') { steps.push({ narrate: body }); }
+        else if (op === '@') {
+          currentTarget = body;
+          if (i + 1 < lines.length && lines[i + 1].trim()[0] === '"') {
+            var thought = lines[++i].trim().slice(1).trim();
+            steps.push({ match: currentTarget, thought: thought, duration: 30000 });
+          } else {
+            steps.push({ match: currentTarget });
+          }
+        }
+        else if (op === '"') { steps.push({ match: currentTarget, thought: body, duration: 30000 }); }
+        else if (op === '~') { steps.push({ wait: parseInt(body, 10) || 2000 }); }
+        else if (op === '.') { steps.push({ clear: true, clearNarrate: true }); }
+      }
+      return self.scene(steps).then(function(r) {
+        var result = { ok: true, steps: r.completed };
+        if (shouldRecord) {
+          result.tape = self.stopRecording();
+        }
+        return result;
+      });
     }
   };
+
+  // Wrap every public method to record calls when recording is active.
+  // Skip recording-control methods to avoid infinite loops.
+  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, getRecording: 1, toScript: 1, moveCursor: 1 };
+  var _recordDepth = 0;
+  Object.keys(window.__mp).forEach(function(key) {
+    if (_noRecord[key] || typeof window.__mp[key] !== 'function') return;
+    var original = window.__mp[key];
+    window.__mp[key] = function() {
+      if (_recording && _recordDepth === 0) {
+        _recording.push({
+          t: Math.round(performance.now() - _recordingStart),
+          fn: key,
+          args: Array.prototype.slice.call(arguments)
+        });
+      }
+      _recordDepth++;
+      var result = original.apply(this, arguments);
+      if (result && typeof result.then === 'function') {
+        return result.then(function(v) { _recordDepth--; return v; }, function(e) { _recordDepth--; throw e; });
+      }
+      _recordDepth--;
+      return result;
+    };
+  });
 
   if (document.body) {
     injectOverlay();

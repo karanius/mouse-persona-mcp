@@ -216,3 +216,96 @@ export async function runBatch(steps: Array<{ action: string; params?: Record<st
 export function isConnected(): boolean {
   return client !== null;
 }
+
+// --- Recording support ---
+
+export async function startRecording(): Promise<void> {
+  await evaluate("window.__mp && window.__mp.startRecording()");
+}
+
+export async function stopRecording(): Promise<any[]> {
+  const result = await evaluate("window.__mp ? JSON.stringify(window.__mp.stopRecording()) : '[]'");
+  if (typeof result !== "string") return [];
+  return JSON.parse(result);
+}
+
+export async function getRecording(): Promise<any[]> {
+  const result = await evaluate("window.__mp ? JSON.stringify(window.__mp.getRecording()) : '[]'");
+  if (typeof result !== "string") return [];
+  return JSON.parse(result);
+}
+
+export async function getCurrentUrl(): Promise<string> {
+  const result = await evaluate("location.href");
+  return typeof result === "string" ? result : "http://localhost:3000";
+}
+
+export interface RecordingEntry {
+  t: number;
+  fn: string;
+  args: any[];
+}
+
+/**
+ * Generate a self-contained replay script from recorded actions.
+ * The output is a single .js file that:
+ *   - Bundles the overlay inline (no external file dependencies)
+ *   - Accepts --speed N flag for playback speed
+ *   - Requires only `npm i playwright` (one-time)
+ *   - Runs with `node recording.js`
+ */
+export function generateReplayScript(tape: RecordingEntry[], url: string, persona?: string): string {
+  const overlaySource = getOverlayScript(persona || currentPersona);
+
+  const lines: string[] = [
+    `// Mouse Persona recording — generated ${new Date().toISOString()}`,
+    `// Replay:  node this-file.js [--speed N]`,
+    `// Example: node recording.js --speed 2`,
+    `//`,
+    `// Requirements: npm i playwright  (one-time)`,
+    ``,
+    `// --- speed flag ---`,
+    `const speedIdx = process.argv.indexOf("--speed");`,
+    `const SPEED = speedIdx !== -1 ? parseFloat(process.argv[speedIdx + 1]) || 1 : 1;`,
+    ``,
+    `// --- overlay (bundled, ${Math.round(overlaySource.length / 1024)}KB) ---`,
+    `const OVERLAY_JS = ${JSON.stringify(overlaySource)};`,
+    ``,
+    `let chromium;`,
+    `try { chromium = require("playwright").chromium; }`,
+    `catch (e) {`,
+    `  console.error("\\n  Playwright not found. Install it:\\n\\n    npm i playwright\\n");`,
+    `  process.exit(1);`,
+    `}`,
+    ``,
+    `(async () => {`,
+    `  const browser = await chromium.launch({ headless: false });`,
+    `  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });`,
+    `  const page = await context.newPage();`,
+    `  await page.addInitScript(OVERLAY_JS);`,
+    `  await page.goto(${JSON.stringify(url)});`,
+    `  await page.waitForLoadState("networkidle");`,
+    `  if (SPEED !== 1) console.log("Replay speed: " + SPEED + "x");`,
+    ``,
+  ];
+
+  let prevT = 0;
+  for (const entry of tape) {
+    const delay = entry.t - prevT;
+    prevT = entry.t;
+    if (delay > 50) {
+      lines.push(`  await new Promise(r => setTimeout(r, ${Math.round(delay)} / SPEED));`);
+    }
+    const args = entry.args.map((a: any) => JSON.stringify(a)).join(", ");
+    lines.push(`  await page.evaluate(() => window.__mp.${entry.fn}(${args}));`);
+  }
+
+  lines.push(``);
+  lines.push(`  await new Promise(r => setTimeout(r, 2000));`);
+  lines.push(`  await page.screenshot({ path: "recording-final.png" });`);
+  lines.push(`  console.log("Done. Screenshot saved to recording-final.png");`);
+  lines.push(`  await browser.close();`);
+  lines.push(`})();`);
+
+  return lines.join("\n");
+}

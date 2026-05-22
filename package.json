@@ -30,7 +30,8 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "chrome-remote-interface": "^0.33.2"
+    "chrome-remote-interface": "^0.33.2",
+    "playwright": "^1.60.0"
   },
   "devDependencies": {
     "@types/chrome-remote-interface": "^0.34.0",

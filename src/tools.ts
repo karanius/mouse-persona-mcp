@@ -188,4 +188,64 @@ export function registerTools(server: McpServer): void {
       }
     }
   );
+
+  // --- Recording tools ---
+
+  server.tool(
+    "persona_record_start",
+    "Start recording all persona actions (glide, think, highlight, etc). Use persona_record_stop to finish and get the recorded session.",
+    {},
+    async () => {
+      try {
+        await cdp.startRecording();
+        return ok("Recording started. All persona actions will be captured.");
+      } catch (e: any) {
+        return err(`Failed to start recording: ${e.message}`);
+      }
+    }
+  );
+
+  server.tool(
+    "persona_record_stop",
+    "Stop recording and return the raw recording data as JSON. To save as a replayable script, use persona_record_save instead.",
+    {},
+    async () => {
+      try {
+        const tape = await cdp.stopRecording();
+        return ok(JSON.stringify({ actions: tape.length, tape }));
+      } catch (e: any) {
+        return err(`Failed to stop recording: ${e.message}`);
+      }
+    }
+  );
+
+  server.tool(
+    "persona_record_save",
+    "Stop recording and save a self-contained replay script. The script bundles the overlay, supports --speed flag, and requires only `npm i playwright` to run. Replay with: node <filename>",
+    {
+      filename: z.string().optional().describe("Output filename (default: recording-<timestamp>.js)"),
+      url: z.string().optional().describe("URL to navigate to on replay (default: current page URL)"),
+    },
+    async ({ filename, url }) => {
+      try {
+        const tape = await cdp.stopRecording();
+        if (tape.length === 0) {
+          return err("No actions recorded. Start recording with persona_record_start first.");
+        }
+        const replayUrl = url || await cdp.getCurrentUrl();
+        const script = cdp.generateReplayScript(tape, replayUrl);
+        const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        const fname = filename || `recording-${ts}.js`;
+
+        const { writeFileSync } = await import("fs");
+        const { resolve } = await import("path");
+        const outPath = resolve(process.cwd(), fname);
+        writeFileSync(outPath, script, "utf-8");
+
+        return ok(`Saved ${tape.length} actions to ${outPath}\n\nReplay: node ${fname}\nFast:   node ${fname} --speed 2`);
+      } catch (e: any) {
+        return err(`Failed to save recording: ${e.message}`);
+      }
+    }
+  );
 }
