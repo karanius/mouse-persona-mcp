@@ -224,6 +224,17 @@
     window.__mp.moveCursor(_cursorX, _cursorY);
   }
 
+  // Scroll element into the lower portion of the viewport so there is
+  // always headroom above the cursor for the thought bubble.
+  function _scrollForBubble(el) {
+    var rect = el.getBoundingClientRect();
+    var targetY = window.innerHeight * 0.65;
+    var scrollDelta = rect.top - targetY;
+    if (Math.abs(scrollDelta) > 10) {
+      window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+    }
+  }
+
   var _MATCH_TAGS = 'a,h1,h2,h3,h4,h5,h6,button,li,td,th,p,span,label,[role="link"],[role="button"]';
 
   function _findByText(match) {
@@ -386,6 +397,10 @@
         var cy = _cursorY || window.innerHeight / 2;
         if (!cachedW) { cachedW = t.offsetWidth || 300; cachedH = t.offsetHeight || 60; }
 
+        var narratorBar = document.getElementById('mp-narrate');
+        var bottomReserve = narratorBar ? 60 : 0;
+        var maxTop = window.innerHeight - cachedH - 10 - bottomReserve;
+
         var left = cx - 20;
         if (left + cachedW > window.innerWidth - 10) left = cx - cachedW + 20;
         left = Math.max(10, Math.min(left, window.innerWidth - cachedW - 10));
@@ -397,7 +412,7 @@
         } else {
           top = cy + 36;
         }
-        top = Math.max(10, Math.min(top, window.innerHeight - cachedH - 10));
+        top = Math.max(10, Math.min(top, maxTop));
 
         t.style.left = left + 'px';
         t.style.top = top + 'px';
@@ -482,7 +497,7 @@
       var totalTime = Math.max(durationMs, readTime);
       var el = _resolveTarget(selectorOrOpts);
       if (!el) return Promise.resolve({ ok: false, error: 'not found: ' + JSON.stringify(selectorOrOpts) });
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      _scrollForBubble(el);
       var self = this;
       return new Promise(function(resolve) {
         setTimeout(function() {
@@ -539,7 +554,7 @@
           if (_targetRef && !s.thought) {
             var el = _resolveTarget(_targetRef);
             if (!el) { results.push({ step: i, action: 'focus', result: { ok: false, error: 'not found: ' + JSON.stringify(_targetRef) } }); return; }
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            _scrollForBubble(el);
             return new Promise(function(resolve) {
               setTimeout(function() {
                 var r = el.getBoundingClientRect();
@@ -556,7 +571,7 @@
           if (s.click) {
             var clickEl = _resolveTarget(s.click);
             if (!clickEl) { results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
-            clickEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            _scrollForBubble(clickEl);
             return new Promise(function(resolve) {
               setTimeout(function() {
                 var cr = clickEl.getBoundingClientRect();
@@ -597,7 +612,7 @@
               if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
               if (_f) fillEl = _f;
             }
-            fillEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            _scrollForBubble(fillEl);
             return new Promise(function(resolve) {
               setTimeout(function() {
                 var fr = fillEl.getBoundingClientRect();
@@ -605,33 +620,40 @@
                   self.ripple();
                   self.highlight(fillEl);
                   fillEl.focus();
-                  // Use the native setter to bypass React's intercepted setter.
-                  // React tracks value via Object.defineProperty on the instance;
-                  // calling the prototype setter updates the DOM without touching
-                  // React's _valueTracker, so React sees a genuine change on the
-                  // next dispatched input event and re-renders.
-                  if (fillEl instanceof HTMLSelectElement) {
-                    fillEl.value = s.value || '';
-                  } else {
-                    var proto = fillEl instanceof HTMLTextAreaElement
-                      ? HTMLTextAreaElement.prototype
-                      : HTMLInputElement.prototype;
-                    var nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value').set;
-                    nativeSetter.call(fillEl, s.value || '');
+                  var chars = (s.value || '').split('');
+                  var isSelect = fillEl instanceof HTMLSelectElement;
+                  var proto = fillEl instanceof HTMLTextAreaElement
+                    ? HTMLTextAreaElement.prototype
+                    : HTMLInputElement.prototype;
+                  var nativeSetter = isSelect ? null : Object.getOwnPropertyDescriptor(proto, 'value').set;
+                  var charIdx = 0;
+                  function typeChar() {
+                    if (charIdx >= chars.length) {
+                      fillEl.dispatchEvent(new Event('change', { bubbles: true }));
+                      var beforeFill = performance.now();
+                      var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
+                      if (fbWaitFill > 0) {
+                        _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
+                          results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
+                          resolve();
+                        });
+                      } else {
+                        results.push({ step: i, action: 'fill', result: { ok: true } });
+                        resolve();
+                      }
+                      return;
+                    }
+                    charIdx++;
+                    var partial = chars.slice(0, charIdx).join('');
+                    if (isSelect) {
+                      fillEl.value = partial;
+                    } else {
+                      nativeSetter.call(fillEl, partial);
+                    }
+                    fillEl.dispatchEvent(new Event('input', { bubbles: true }));
+                    setTimeout(typeChar, 30 + Math.random() * 40);
                   }
-                  var beforeFill = performance.now();
-                  fillEl.dispatchEvent(new Event('input', { bubbles: true }));
-                  fillEl.dispatchEvent(new Event('change', { bubbles: true }));
-                  var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : 500;
-                  if (fbWaitFill > 0) {
-                    _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
-                      results.push({ step: i, action: 'fill', result: { ok: true }, feedback: fb });
-                      resolve();
-                    });
-                  } else {
-                    results.push({ step: i, action: 'fill', result: { ok: true } });
-                    resolve();
-                  }
+                  typeChar();
                 });
               }, 400);
             });
@@ -704,7 +726,7 @@
       opts = opts || {};
       var self = this;
       var shouldRecord = opts.record !== false;
-      _humanPause = opts.human ? (typeof opts.human === 'number' ? opts.human : 7000) : 0;
+      _humanPause = opts.human === false ? 0 : (typeof opts.human === 'number' ? opts.human : 7000);
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
       var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
