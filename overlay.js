@@ -522,11 +522,15 @@
       t.className = 'mp-thought';
       var ptr = document.createElement('div');
       ptr.className = 'mp-ptr';
-      var icon = document.createElement('span');
-      icon.style.cssText = 'font-style:normal;margin-right:6px;color:#6366f1;font-weight:600;';
-      icon.textContent = '“';
-      t.appendChild(icon);
+      var iconOpen = document.createElement('span');
+      iconOpen.style.cssText = 'font-style:normal;margin-right:4px;color:#6366f1;font-weight:600;opacity:0.6;';
+      iconOpen.textContent = '“';
+      var iconClose = document.createElement('span');
+      iconClose.style.cssText = 'font-style:normal;margin-left:4px;color:#6366f1;font-weight:600;opacity:0.6;';
+      iconClose.textContent = '”';
+      t.appendChild(iconOpen);
       t.appendChild(document.createTextNode(text));
+      t.appendChild(iconClose);
       t.appendChild(ptr);
       _root.appendChild(t);
 
@@ -548,9 +552,9 @@
         var bubbleAbove = cy > cachedH + 50;
         var top;
         if (bubbleAbove) {
-          top = cy - cachedH - 18;
+          top = cy - cachedH - 12;
         } else {
-          top = cy + 36;
+          top = cy + 30;
         }
         top = Math.max(10, Math.min(top, maxTop));
 
@@ -561,7 +565,7 @@
         ptr.style.left = ptrLeft + 'px';
         if (bubbleAbove) {
           ptr.className = 'mp-ptr mp-ptr-down';
-          ptr.style.top = cachedH + 'px';
+          ptr.style.top = (cachedH - 1) + 'px';
         } else {
           ptr.className = 'mp-ptr mp-ptr-up';
           ptr.style.top = '-7px';
