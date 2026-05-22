@@ -253,7 +253,7 @@
       '@keyframes mp-thought-in { 0% { transform:scale(0.97) translateY(4px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }',
       '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:rgba(245,245,248,0.92);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(0,0,0,0.06);border-radius:16px;padding:14px 18px;box-shadow:0 4px 24px rgba(0,0,0,0.1),0 1px 3px rgba(0,0,0,0.06);font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",sans-serif;font-size:13.5px;font-weight:400;font-style:normal;letter-spacing:0.1px;color:#2c2c2e;max-width:360px;line-height:1.55;opacity:0;overflow:visible; }',
       '.mp-thought.visible { animation:mp-thought-in 0.25s cubic-bezier(0.2,0,0,1) forwards; }',
-      '.mp-thought .mp-ptr { position:absolute;pointer-events:none;width:14px;height:14px;background:rgba(245,245,248,0.92);border:1px solid rgba(0,0,0,0.06);border-top:none;border-left:none;transform:rotate(45deg);box-shadow:2px 2px 4px rgba(0,0,0,0.04); }',
+      '.mp-thought .mp-ptr { position:absolute;pointer-events:none;z-index:-1;width:14px;height:14px;background:rgba(245,245,248,0.92);border:1px solid rgba(0,0,0,0.06);border-top:none;border-left:none;transform:rotate(45deg);box-shadow:2px 2px 4px rgba(0,0,0,0.04); }',
       '.mp-thought .mp-ptr-down { }',
       '.mp-thought .mp-ptr-up { transform:rotate(-135deg); }',
       '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:rgba(245,245,248,0.92);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-top:1px solid rgba(0,0,0,0.06);color:#2c2c2e;padding:12px 32px;font-family:-apple-system,\"SF Pro Text\",sans-serif;font-size:14px;font-weight:500;text-align:center;letter-spacing:0.2px;box-shadow:0 -4px 20px rgba(0,0,0,0.06);transition:opacity 0.3s ease; }'
@@ -565,10 +565,10 @@
         ptr.style.left = ptrLeft + 'px';
         if (bubbleAbove) {
           ptr.className = 'mp-ptr mp-ptr-down';
-          ptr.style.top = (cachedH - 8) + 'px';
+          ptr.style.top = (cachedH - 10) + 'px';
         } else {
           ptr.className = 'mp-ptr mp-ptr-up';
-          ptr.style.top = '-6px';
+          ptr.style.top = '-8px';
         }
         _thoughtTimerId = setTimeout(positionBubble, 100);
       }
@@ -858,6 +858,7 @@
       opts = opts || {};
       var self = this;
       var shouldRecord = opts.record !== false;
+      var startUrl = location.href;
       _humanPause = opts.human === false ? 0 : (typeof opts.human === 'number' ? opts.human : CFG_HUMAN_MS);
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
@@ -894,7 +895,7 @@
         }
         _sessionTapes.push({
           ts: new Date().toISOString(),
-          url: location.href,
+          url: startUrl,
           dsl: script,
           tape: result.tape || []
         });
