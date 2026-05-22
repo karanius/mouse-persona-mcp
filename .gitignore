@@ -2,5 +2,5 @@ node_modules/
 dist/
 *.js
 !src/**
-
-recordings/
+!overlay.js
+!recordings/*.js
