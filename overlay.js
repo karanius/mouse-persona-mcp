@@ -19,7 +19,17 @@
   function injectOverlay() {
     if (_injected) return;
     if (!document.body) return;
-    if (document.getElementById('mouse-overlay-root')) return;
+
+    var existingRoot = document.getElementById('mouse-overlay-root');
+    if (existingRoot) {
+      // Re-adopt existing DOM created by a prior injection (e.g. CDP double-eval).
+      // Without this, _root stays undefined and think() silently no-ops.
+      _root = existingRoot;
+      _cursor = document.getElementById('custom-cursor');
+      _label = document.getElementById('cursor-label');
+      _injected = true;
+      return;
+    }
     _injected = true;
 
     _root = document.createElement('div');
@@ -149,17 +159,23 @@
       if (!_root) return;
       if (x === undefined) x = _cursorX;
       if (y === undefined) y = _cursorY;
+      // Ripple elements use fully-inline styles (no dependency on the
+      // <style> tag which may be blocked by CSP).  Animation is applied
+      // AFTER append + forced reflow so Chromium sees a pre-animation
+      // state and actually starts the keyframes.
       var r = document.createElement('div');
-      r.className = 'mp-ripple';
-      r.style.left = (x - 25) + 'px';
-      r.style.top = (y - 25) + 'px';
+      r.style.cssText = 'position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid #ef4444;pointer-events:none;z-index:100002;left:' + (x - 25) + 'px;top:' + (y - 25) + 'px;';
       _root.appendChild(r);
+      void r.offsetWidth;
+      r.style.animation = 'mp-ripple 0.7s ease-out forwards';
+
       var inner = document.createElement('div');
-      inner.className = 'mp-ripple-inner';
-      inner.style.left = (x - 8) + 'px';
-      inner.style.top = (y - 8) + 'px';
+      inner.style.cssText = 'position:fixed;width:16px;height:16px;border-radius:50%;background:#ef4444;pointer-events:none;z-index:100002;left:' + (x - 8) + 'px;top:' + (y - 8) + 'px;';
       _root.appendChild(inner);
-      setTimeout(function() { r.remove(); inner.remove(); }, 700);
+      void inner.offsetWidth;
+      inner.style.animation = 'mp-ripple-inner 0.5s ease-out forwards';
+
+      setTimeout(function() { r.remove(); inner.remove(); }, 800);
     },
 
     highlight: function(el) {
@@ -345,6 +361,45 @@
             });
           }
 
+          if (s.click) {
+            var clickEl = _resolveTarget(s.click);
+            if (!clickEl) { results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
+            clickEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return new Promise(function(resolve) {
+              setTimeout(function() {
+                var cr = clickEl.getBoundingClientRect();
+                self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, 400).then(function() {
+                  self.ripple();
+                  self.highlight(clickEl);
+                  clickEl.click();
+                  results.push({ step: i, action: 'click', result: { ok: true } });
+                  resolve();
+                });
+              }, 400);
+            });
+          }
+
+          if (s.fill) {
+            var fillEl = _resolveTarget(s.fill);
+            if (!fillEl) { results.push({ step: i, action: 'fill', result: { ok: false, error: 'not found' } }); return; }
+            fillEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return new Promise(function(resolve) {
+              setTimeout(function() {
+                var fr = fillEl.getBoundingClientRect();
+                self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, 400).then(function() {
+                  self.ripple();
+                  self.highlight(fillEl);
+                  fillEl.focus();
+                  fillEl.value = s.value || '';
+                  fillEl.dispatchEvent(new Event('input', { bubbles: true }));
+                  fillEl.dispatchEvent(new Event('change', { bubbles: true }));
+                  results.push({ step: i, action: 'fill', result: { ok: true } });
+                  resolve();
+                });
+              }, 400);
+            });
+          }
+
           if (s.think) {
             self.think(s.think, s.duration || 4000);
             results.push({ step: i, action: 'think' });
@@ -427,6 +482,11 @@
           }
         }
         else if (op === '"') { steps.push({ match: currentTarget, thought: body, duration: 30000 }); }
+        else if (op === '!') { steps.push({ click: { match: body } }); }
+        else if (op === '=') {
+          var parts = body.split('|');
+          steps.push({ fill: { match: parts[0].trim() }, value: parts[1] ? parts[1].trim() : '' });
+        }
         else if (op === '~') { steps.push({ wait: parseInt(body, 10) || 2000 }); }
         else if (op === '.') { steps.push({ clear: true, clearNarrate: true }); }
       }
