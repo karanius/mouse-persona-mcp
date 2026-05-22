@@ -112,6 +112,45 @@
     return exact || partial || null;
   }
 
+  function _findInput(match) {
+    if (!match) return null;
+    var needle = match.toLowerCase().replace(/\s+/g, ' ').trim();
+    // 1. Search inputs/textareas/selects by placeholder, aria-label, name
+    var inputs = document.querySelectorAll('input,textarea,select');
+    for (var i = 0; i < inputs.length; i++) {
+      var ph = (inputs[i].placeholder || '').toLowerCase().trim();
+      var al = (inputs[i].getAttribute('aria-label') || '').toLowerCase().trim();
+      var nm = (inputs[i].name || '').toLowerCase().trim();
+      if (ph === needle || al === needle || nm === needle) return inputs[i];
+      if (ph.indexOf(needle) !== -1 || al.indexOf(needle) !== -1) return inputs[i];
+    }
+    // 2. Find a label with that text, follow its `for` or find child/sibling input
+    var labels = document.querySelectorAll('label');
+    for (var j = 0; j < labels.length; j++) {
+      var ltxt = (labels[j].textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (ltxt === needle || ltxt.indexOf(needle) !== -1) {
+        var forId = labels[j].getAttribute('for');
+        if (forId) { var byId = document.getElementById(forId); if (byId) return byId; }
+        var child = labels[j].querySelector('input,textarea,select');
+        if (child) return child;
+        var sib = labels[j].nextElementSibling;
+        if (sib && /^(INPUT|TEXTAREA|SELECT)$/.test(sib.tagName)) return sib;
+      }
+    }
+    // 3. Search by aria-labelledby
+    for (var k = 0; k < inputs.length; k++) {
+      var labelledBy = inputs[k].getAttribute('aria-labelledby');
+      if (labelledBy) {
+        var refEl = document.getElementById(labelledBy);
+        if (refEl) {
+          var refTxt = (refEl.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+          if (refTxt === needle || refTxt.indexOf(needle) !== -1) return inputs[k];
+        }
+      }
+    }
+    return null;
+  }
+
   function _resolveTarget(opts) {
     // opts can be: string (selector), {selector:...}, {text:...}, or {match:...}
     if (typeof opts === 'string') return document.querySelector(opts);
@@ -402,8 +441,22 @@
           }
 
           if (s.fill) {
-            var fillEl = _resolveTarget(s.fill);
-            if (!fillEl) { results.push({ step: i, action: 'fill', result: { ok: false, error: 'not found' } }); return; }
+            var fillMatch = (typeof s.fill === 'string') ? s.fill : (s.fill.text || s.fill.match || null);
+            var fillEl = (s.fill.selector) ? document.querySelector(s.fill.selector) : (_findInput(fillMatch) || _resolveTarget(s.fill));
+            if (!fillEl) { results.push({ step: i, action: 'fill', result: { ok: false, error: 'not found: ' + JSON.stringify(s.fill) } }); return; }
+            // If we landed on a non-fillable element (label, span, etc.), chase to its input
+            if (!/^(INPUT|TEXTAREA|SELECT)$/.test(fillEl.tagName)) {
+              var _f = null;
+              if (fillEl.tagName === 'LABEL') {
+                var _fid = fillEl.getAttribute('for');
+                if (_fid) _f = document.getElementById(_fid);
+                if (!_f) _f = fillEl.querySelector('input,textarea,select');
+              }
+              if (!_f) { var _ns = fillEl.nextElementSibling; if (_ns && /^(INPUT|TEXTAREA|SELECT)$/.test(_ns.tagName)) _f = _ns; }
+              if (!_f) _f = fillEl.closest('label,fieldset,[role="group"]');
+              if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
+              if (_f) fillEl = _f;
+            }
             fillEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return new Promise(function(resolve) {
               setTimeout(function() {
@@ -412,7 +465,20 @@
                   self.ripple();
                   self.highlight(fillEl);
                   fillEl.focus();
-                  fillEl.value = s.value || '';
+                  // Use the native setter to bypass React's intercepted setter.
+                  // React tracks value via Object.defineProperty on the instance;
+                  // calling the prototype setter updates the DOM without touching
+                  // React's _valueTracker, so React sees a genuine change on the
+                  // next dispatched input event and re-renders.
+                  if (fillEl instanceof HTMLSelectElement) {
+                    fillEl.value = s.value || '';
+                  } else {
+                    var proto = fillEl instanceof HTMLTextAreaElement
+                      ? HTMLTextAreaElement.prototype
+                      : HTMLInputElement.prototype;
+                    var nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+                    nativeSetter.call(fillEl, s.value || '');
+                  }
                   fillEl.dispatchEvent(new Event('input', { bubbles: true }));
                   fillEl.dispatchEvent(new Event('change', { bubbles: true }));
                   results.push({ step: i, action: 'fill', result: { ok: true } });
