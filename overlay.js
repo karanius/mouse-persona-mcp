@@ -534,12 +534,11 @@
       t.appendChild(ptr);
       _root.appendChild(t);
 
-      var cachedW = 0, cachedH = 0;
-
       function positionBubble() {
         var cx = _cursorX || window.innerWidth / 2;
         var cy = _cursorY || window.innerHeight / 2;
-        if (!cachedW) { cachedW = t.offsetWidth || 300; cachedH = t.offsetHeight || 60; }
+        var cachedW = t.offsetWidth || 300;
+        var cachedH = t.offsetHeight || 60;
 
         var narratorBar = document.getElementById('mp-narrate');
         var bottomReserve = narratorBar ? 60 : 0;
