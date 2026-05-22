@@ -1,6 +1,15 @@
 {
   "persona": {
-    "name": "Tester"
+    "name": "Tester",
+    "role": "",
+    "experience": "",
+    "voice": "Neutral observer. States what they see and how they feel about it.",
+    "priorities": []
+  },
+  "narrator": {
+    "audience": "stakeholders",
+    "voice": "Third-person, concise. Describe what the persona is doing and why it matters.",
+    "format": "action + business implication"
   },
   "timing": {
     "humanPauseMs": 7000,

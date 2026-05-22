@@ -34,9 +34,15 @@ Visual persona overlay for browser demos. Injected via Playwright's `--init-scri
 3. browser_evaluate(() => __mp.x('Persona', '...DSL...'))  // run the scene
 ```
 
-## Config
+## Two Perspectives
 
-All defaults in `persona.config.json`: timing, colors, scroll zones, typing speed, bubble style.
+Every scene has two voices — read `AGENTS.md` for full guide:
+- **`"` (thought bubble)** = persona's inner monologue. First person, their vocabulary, their emotional register.
+- **`>` (narrator bar)** = investor/stakeholder context. Third person, business impact, one sentence.
+
+## Persona Config
+
+`persona.config.json` defines both the persona profile (name, role, voice, priorities) and narrator audience (investors, product, compliance, engineering). All timing/style defaults are also here.
 
 ## Human mode
 
