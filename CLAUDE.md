@@ -53,15 +53,26 @@ Pre-built profiles in `personas/` directory (chris-daw.json, kate-lamb.json, pri
 
 ON by default (7s per thought with countdown). Disable: pass `{human: false}` in run() opts.
 
-## Recording
+## Recording (Automatic)
 
-Every `run()`/`x()` auto-records. Tape returned in result. Save as replayable Playwright script in `recordings/`.
+Every `x()` call is automatically accumulated in a session tape. At the end of any journey, export and save:
+
+```js
+// Get the replay script
+() => __mp.exportReplay()  // returns a runnable Node.js script as a string
+
+// Get raw session data
+() => __mp.session()  // returns {persona, narrator, scenes: [{ts, url, dsl, tape}]}
+```
 
 ## Typical Workflow
 
 ```
 1. browser_navigate(url)
 2. browser_evaluate(() => __mp.loadPersona({...}))  // once per session
-3. browser_evaluate(() => __mp.d(3))                 // see what's on the page
-4. browser_evaluate(() => __mp.x('> investor context\n@ element\n" persona thought\n.'))
+3. browser_evaluate(() => __mp.x('...DSL...'))       // repeat for each scene
+4. browser_evaluate(() => __mp.exportReplay())       // grab replay script
+5. Write returned string to recordings/*.js          // one Bash call
 ```
+
+Step 4-5 MUST happen at the end of every journey. The overlay accumulates all scenes automatically — the LLM just exports and saves once.

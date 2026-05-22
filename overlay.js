@@ -49,6 +49,7 @@
   var _recordingStart = 0;
   var _humanPause = 0;
   var _mpClickInProgress = false;
+  var _sessionTapes = [];
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -891,6 +892,12 @@
         if (shouldRecord) {
           result.tape = self.stopRecording();
         }
+        _sessionTapes.push({
+          ts: new Date().toISOString(),
+          url: location.href,
+          dsl: script,
+          tape: result.tape || []
+        });
         return result;
       });
     },
@@ -933,12 +940,77 @@
 
     d: function(n) {
       return this.discover(n || 3);
+    },
+
+    session: function() {
+      return {
+        persona: _cfg.persona || {},
+        narrator: _cfg.narrator || {},
+        scenes: _sessionTapes,
+        startedAt: _sessionTapes.length ? _sessionTapes[0].ts : null
+      };
+    },
+
+    exportReplay: function() {
+      var p = (_cfg.persona && _cfg.persona.name) || _persona || 'Tester';
+      var scenes = _sessionTapes.map(function(s, i) {
+        return '  {\n    name: "Scene ' + (i + 1) + '",\n    dsl: ' + JSON.stringify(s.dsl) + '\n  }';
+      });
+      var startUrl = _sessionTapes.length ? _sessionTapes[0].url : 'http://localhost:3000';
+      return [
+        '#!/usr/bin/env node',
+        '// Cursor Persona Recording — ' + p,
+        '// Generated: ' + new Date().toISOString(),
+        '// Replay: node this-file.js',
+        '',
+        'const fs = require("fs");',
+        'const path = require("path");',
+        'let chromium;',
+        'try { chromium = require("playwright").chromium; }',
+        'catch { console.error("npm i playwright"); process.exit(1); }',
+        '',
+        'const HUMAN = process.argv.includes("--no-human") ? 0 : 7000;',
+        'const OVERLAY = path.resolve(__dirname, "..", "overlay.js");',
+        'const PERSONA = ' + JSON.stringify(p) + ';',
+        '',
+        'const SCENES = [',
+        scenes.join(',\n'),
+        '];',
+        '',
+        '(async () => {',
+        '  const browser = await chromium.launch({',
+        '    headless: false,',
+        '    args: ["--disable-infobars"],',
+        '    ignoreDefaultArgs: ["--enable-automation", "--disable-blink-features=AutomationControlled"]',
+        '  });',
+        '  const context = await browser.newContext({',
+        '    viewport: { width: 1280, height: 900 },',
+        '    storageState: { cookies: [], origins: [] }',
+        '  });',
+        '  const page = await context.newPage();',
+        '  const overlay = fs.readFileSync(OVERLAY, "utf-8").replace("__MP_PERSONA_NAME__", PERSONA);',
+        '  await page.addInitScript(overlay);',
+        '  await page.goto(' + JSON.stringify(startUrl) + ');',
+        '  await page.waitForLoadState("networkidle");',
+        '  await page.evaluate(([p,h]) => { window.__mp.setPersona(p); window.__mp.setHuman(h); }, [PERSONA, HUMAN]);',
+        '',
+        '  for (let i = 0; i < SCENES.length; i++) {',
+        '    console.log("  " + SCENES[i].name);',
+        '    await page.evaluate(([h,s]) => { window.__mp.setHuman(h); return window.__mp.x(s); }, [HUMAN, SCENES[i].dsl]);',
+        '    await new Promise(r => setTimeout(r, 500));',
+        '  }',
+        '',
+        '  console.log("Done.");',
+        '  await new Promise(r => setTimeout(r, 3000));',
+        '  await browser.close();',
+        '})();'
+      ].join('\n');
     }
   };
 
   // Wrap every public method to record calls when recording is active.
   // Skip recording-control methods to avoid infinite loops.
-  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, x: 1, who: 1, loadPersona: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
+  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, x: 1, who: 1, loadPersona: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1, session: 1, exportReplay: 1 };
   var _recordDepth = 0;
   Object.keys(window.__mp).forEach(function(key) {
     if (_noRecord[key] || typeof window.__mp[key] !== 'function') return;
