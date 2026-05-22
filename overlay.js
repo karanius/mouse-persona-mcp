@@ -829,12 +829,20 @@
         }
         return result;
       });
+    },
+
+    x: function(persona, dsl) {
+      return this.run(dsl, { persona: persona });
+    },
+
+    d: function(n) {
+      return this.discover(n || 3);
     }
   };
 
   // Wrap every public method to record calls when recording is active.
   // Skip recording-control methods to avoid infinite loops.
-  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
+  var _noRecord = { startRecording: 1, stopRecording: 1, replay: 1, run: 1, x: 1, getRecording: 1, toScript: 1, moveCursor: 1, feedback: 1 };
   var _recordDepth = 0;
   Object.keys(window.__mp).forEach(function(key) {
     if (_noRecord[key] || typeof window.__mp[key] !== 'function') return;
