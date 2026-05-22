@@ -20,6 +20,8 @@
   var CFG_FEEDBACK_FILL_MS = _fb.fillMs || 500;
   var CFG_TYPE_MIN = _ts.minMs || 30;
   var CFG_TYPE_MAX = _ts.maxMs || 70;
+  var CFG_ACTION_TIMEOUT = _t.actionTimeoutMs || 15000;
+  var CFG_SCENE_TIMEOUT = _t.sceneTimeoutMs || 90000;
   var CFG_SAFE_TOP = _sc.safeZoneTop || 0.30;
   var CFG_SAFE_BOT = _sc.safeZoneBottom || 0.60;
   var CFG_RIPPLE_COLOR = _s.rippleColor || '#ef4444';
@@ -54,6 +56,34 @@
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
   function _html(el, s) { el.innerHTML = _tp.createHTML(s); }
+
+  // ── Timeout helpers ──
+  var _sceneProgress = { results: [], currentStep: -1, totalSteps: 0, currentLabel: '' };
+
+  function _raceTimeout(promise, ms, label) {
+    return new Promise(function(resolve, reject) {
+      var done = false;
+      var timer = setTimeout(function() {
+        if (!done) { done = true; resolve({ __timeout: true, ms: ms, label: label }); }
+      }, ms);
+      promise.then(function(v) {
+        if (!done) { done = true; clearTimeout(timer); resolve(v); }
+      }, function(e) {
+        if (!done) { done = true; clearTimeout(timer); reject(e); }
+      });
+    });
+  }
+
+  function _stepLabel(s) {
+    if (s.click) return '! ' + (s.click.match || s.click.text || JSON.stringify(s.click));
+    if (s.fill) return '= ' + ((typeof s.fill === 'string' ? s.fill : s.fill.match || s.fill.text || '') + ' | ' + (s.value || '')).substring(0, 60);
+    if (s.thought) return '" ' + s.thought.substring(0, 50);
+    if (s.match) return '@ ' + s.match;
+    if (s.narrate !== undefined) return '> ' + (s.narrate || '').substring(0, 50);
+    if (s.wait) return '~ ' + s.wait;
+    if (s.clear) return '.';
+    return '?';
+  }
 
   // ── Observability collectors ──
   var _netLog = [], _toastLog = [], _urlLog = [], _errorLog = [];
@@ -683,110 +713,133 @@
     scene: function(steps) {
       var self = this;
       var results = [];
+      var consecutiveTimeouts = 0;
+      var aborted = false;
+      _sceneProgress = { results: results, currentStep: -1, totalSteps: steps.length, currentLabel: '' };
       var chain = Promise.resolve();
       steps.forEach(function(s, i) {
         chain = chain.then(function() {
+          if (aborted) return;
+          _sceneProgress.currentStep = i;
+          _sceneProgress.currentLabel = _stepLabel(s);
+
           if (s.persona) self.setPersona(s.persona);
           if (s.narrate !== undefined) self.narrate(s.narrate);
           if (s.clearNarrate) self.clearNarrate();
           if (s.clear) self.clear();
 
-          var _targetRef = s.match ? { match: s.match } : s.text ? { text: s.text } : s.selector || null;
-          if (_targetRef && s.thought) {
-            return self.commentOn(_targetRef, s.thought, s.duration || CFG_THOUGHT_MS).then(function(r) {
-              results.push({ step: i, action: 'commentOn', result: r });
-              if (s.pause !== undefined) return new Promise(function(res) { setTimeout(res, s.pause); });
-            });
-          }
+          var stepExpired = false;
 
-          if (_targetRef && !s.thought) {
-            var el = _resolveTarget(_targetRef);
-            if (!el) { results.push({ step: i, action: 'focus', result: { ok: false, error: 'not found: ' + JSON.stringify(_targetRef) } }); return; }
-            return _scrollForBubble(el).then(function() {
-              var r = el.getBoundingClientRect();
-              return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, CFG_COMMENT_GLIDE_MS);
-            }).then(function() {
-              self.highlight(el);
-              results.push({ step: i, action: 'focus', result: { ok: true } });
-            });
-          }
-
-          if (s.click) {
-            var clickEl = _resolveTarget(s.click);
-            if (!clickEl) { results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
-            return _scrollForBubble(clickEl).then(function() {
-              var cr = clickEl.getBoundingClientRect();
-              return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, CFG_COMMENT_GLIDE_MS);
-            }).then(function() {
-              var cr = clickEl.getBoundingClientRect();
-              var cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
-              self.ripple(cx, cy);
-              self.highlight(clickEl);
-              var urlBefore = location.href;
-              var hBefore = document.querySelector('h1,h2');
-              var headingBefore = hBefore ? hBefore.textContent.trim() : null;
-              var beforeClick = performance.now();
-              _mpClickInProgress = true;
-              _cursorClick(_cursorX, _cursorY);
-              _mpClickInProgress = false;
-              var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
-              if (fbWait > 0) {
-                return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
-                  var verify = _verifyClick(clickEl, urlBefore, headingBefore);
-                  results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, feedback: fb, verify: verify });
-                });
-              } else {
-                var verify = _verifyClick(clickEl, urlBefore, headingBefore);
-                results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, verify: verify });
-              }
-            });
-          }
-
-          if (s.fill) {
-            var fillMatch = (typeof s.fill === 'string') ? s.fill : (s.fill.text || s.fill.match || null);
-            var fillEl = (s.fill.selector) ? document.querySelector(s.fill.selector) : (_findInput(fillMatch) || _resolveTarget(s.fill));
-            if (!fillEl) { results.push({ step: i, action: 'fill', result: { ok: false, error: 'not found: ' + JSON.stringify(s.fill) } }); return; }
-            // If we landed on a non-fillable element (label, span, etc.), chase to its input
-            if (!/^(INPUT|TEXTAREA|SELECT)$/.test(fillEl.tagName)) {
-              var _f = null;
-              if (fillEl.tagName === 'LABEL') {
-                var _fid = fillEl.getAttribute('for');
-                if (_fid) _f = document.getElementById(_fid);
-                if (!_f) _f = fillEl.querySelector('input,textarea,select');
-              }
-              if (!_f) { var _ns = fillEl.nextElementSibling; if (_ns && /^(INPUT|TEXTAREA|SELECT)$/.test(_ns.tagName)) _f = _ns; }
-              if (!_f) _f = fillEl.closest('label,fieldset,[role="group"]');
-              if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
-              if (_f) fillEl = _f;
+          var stepPromise = (function() {
+            var _targetRef = s.match ? { match: s.match } : s.text ? { text: s.text } : s.selector || null;
+            if (_targetRef && s.thought) {
+              return self.commentOn(_targetRef, s.thought, s.duration || CFG_THOUGHT_MS).then(function(r) {
+                if (!stepExpired) results.push({ step: i, action: 'commentOn', result: r });
+                if (s.pause !== undefined) return new Promise(function(res) { setTimeout(res, s.pause); });
+              });
             }
-            return _scrollForBubble(fillEl).then(function() {
-              var fr = fillEl.getBoundingClientRect();
-              return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
-            }).then(function() {
-              self.highlight(fillEl);
-              _cursorClick(_cursorX, _cursorY);
-              fillEl.focus();
-              return _cursorType(fillEl, s.value || '');
-            }).then(function() {
-              var beforeFill = performance.now();
-              var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
-              var fillVerify = _verifyFill(fillEl, s.value || '');
-              if (fbWaitFill > 0) {
-                return _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
-                  results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, feedback: fb, verify: fillVerify });
-                });
-              } else {
-                results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, verify: fillVerify });
+
+            if (_targetRef && !s.thought) {
+              var el = _resolveTarget(_targetRef);
+              if (!el) { if (!stepExpired) results.push({ step: i, action: 'focus', result: { ok: false, error: 'not found: ' + JSON.stringify(_targetRef) } }); return; }
+              return _scrollForBubble(el).then(function() {
+                var r = el.getBoundingClientRect();
+                return self.glideTo(r.left + r.width / 2, r.top + r.height / 2, CFG_COMMENT_GLIDE_MS);
+              }).then(function() {
+                self.highlight(el);
+                if (!stepExpired) results.push({ step: i, action: 'focus', result: { ok: true } });
+              });
+            }
+
+            if (s.click) {
+              var clickEl = _resolveTarget(s.click);
+              if (!clickEl) { if (!stepExpired) results.push({ step: i, action: 'click', result: { ok: false, error: 'not found' } }); return; }
+              return _scrollForBubble(clickEl).then(function() {
+                var cr = clickEl.getBoundingClientRect();
+                return self.glideTo(cr.left + cr.width / 2, cr.top + cr.height / 2, CFG_COMMENT_GLIDE_MS);
+              }).then(function() {
+                var cr = clickEl.getBoundingClientRect();
+                var cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+                self.ripple(cx, cy);
+                self.highlight(clickEl);
+                var urlBefore = location.href;
+                var hBefore = document.querySelector('h1,h2');
+                var headingBefore = hBefore ? hBefore.textContent.trim() : null;
+                var beforeClick = performance.now();
+                _mpClickInProgress = true;
+                _cursorClick(_cursorX, _cursorY);
+                _mpClickInProgress = false;
+                var fbWait = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_CLICK_MS;
+                if (fbWait > 0) {
+                  return _waitForFeedback(beforeClick, fbWait).then(function(fb) {
+                    var verify = _verifyClick(clickEl, urlBefore, headingBefore);
+                    if (!stepExpired) results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, feedback: fb, verify: verify });
+                  });
+                } else {
+                  var verify = _verifyClick(clickEl, urlBefore, headingBefore);
+                  if (!stepExpired) results.push({ step: i, action: 'click', result: { ok: !verify.wasDisabled }, verify: verify });
+                }
+              });
+            }
+
+            if (s.fill) {
+              var fillMatch = (typeof s.fill === 'string') ? s.fill : (s.fill.text || s.fill.match || null);
+              var fillEl = (s.fill.selector) ? document.querySelector(s.fill.selector) : (_findInput(fillMatch) || _resolveTarget(s.fill));
+              if (!fillEl) { if (!stepExpired) results.push({ step: i, action: 'fill', result: { ok: false, error: 'not found: ' + JSON.stringify(s.fill) } }); return; }
+              if (!/^(INPUT|TEXTAREA|SELECT)$/.test(fillEl.tagName)) {
+                var _f = null;
+                if (fillEl.tagName === 'LABEL') {
+                  var _fid = fillEl.getAttribute('for');
+                  if (_fid) _f = document.getElementById(_fid);
+                  if (!_f) _f = fillEl.querySelector('input,textarea,select');
+                }
+                if (!_f) { var _ns = fillEl.nextElementSibling; if (_ns && /^(INPUT|TEXTAREA|SELECT)$/.test(_ns.tagName)) _f = _ns; }
+                if (!_f) _f = fillEl.closest('label,fieldset,[role="group"]');
+                if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
+                if (_f) fillEl = _f;
               }
-            });
-          }
+              return _scrollForBubble(fillEl).then(function() {
+                var fr = fillEl.getBoundingClientRect();
+                return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
+              }).then(function() {
+                self.highlight(fillEl);
+                _cursorClick(_cursorX, _cursorY);
+                fillEl.focus();
+                return _cursorType(fillEl, s.value || '');
+              }).then(function() {
+                var beforeFill = performance.now();
+                var fbWaitFill = s.feedbackMs !== undefined ? s.feedbackMs : CFG_FEEDBACK_FILL_MS;
+                var fillVerify = _verifyFill(fillEl, s.value || '');
+                if (fbWaitFill > 0) {
+                  return _waitForFeedback(beforeFill, fbWaitFill).then(function(fb) {
+                    if (!stepExpired) results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, feedback: fb, verify: fillVerify });
+                  });
+                } else {
+                  if (!stepExpired) results.push({ step: i, action: 'fill', result: { ok: fillVerify.match }, verify: fillVerify });
+                }
+              });
+            }
 
-          if (s.think) {
-            self.think(s.think, s.duration || CFG_THOUGHT_MS);
-            results.push({ step: i, action: 'think' });
-          }
+            if (s.think) {
+              self.think(s.think, s.duration || CFG_THOUGHT_MS);
+              if (!stepExpired) results.push({ step: i, action: 'think' });
+            }
 
-          if (s.wait) return new Promise(function(res) { setTimeout(res, s.wait); });
+            if (s.wait) return new Promise(function(res) { setTimeout(res, s.wait); });
+          })();
+
+          var stepTimeout = s.wait ? Math.max(CFG_ACTION_TIMEOUT, s.wait + 1000) : CFG_ACTION_TIMEOUT;
+          return _raceTimeout(stepPromise || Promise.resolve(), stepTimeout, _stepLabel(s)).then(function(r) {
+            var isTrivialStep = (!s.click && !s.fill && !s.match && !s.think && !s.wait);
+            if (r && r.__timeout) {
+              stepExpired = true;
+              consecutiveTimeouts++;
+              results.push({ step: i, action: 'timeout', error: 'action exceeded ' + r.ms + 'ms', target: r.label });
+              if (consecutiveTimeouts >= 3) aborted = true;
+            } else if (!isTrivialStep) {
+              consecutiveTimeouts = 0;
+            }
+          });
         });
       });
       return chain.then(function() {
@@ -798,7 +851,7 @@
             drifts.push({ step: results[d].step, action: results[d].action, verify: v });
           }
         }
-        return { completed: results.length, results: results, drifts: drifts };
+        return { completed: results.length, results: results, drifts: drifts, aborted: aborted };
       });
     },
 
@@ -887,18 +940,33 @@
         else if (op === '~') { steps.push({ wait: parseInt(body, 10) || 2000 }); }
         else if (op === '.') { steps.push({ clear: true, clearNarrate: true }); }
       }
-      return self.scene(steps).then(function(r) {
+      var sceneStart = performance.now();
+      return _raceTimeout(self.scene(steps), CFG_SCENE_TIMEOUT, 'scene').then(function(r) {
         _humanPause = 0;
-        var result = { ok: true, steps: r.completed, drifts: r.drifts || [] };
-        if (shouldRecord) {
-          result.tape = self.stopRecording();
+        if (r && r.__timeout) {
+          var result = {
+            ok: false,
+            status: 'timeout',
+            completedActions: _sceneProgress.results.length,
+            totalActions: steps.length,
+            failedAt: _sceneProgress.currentLabel,
+            elapsed: Math.round(performance.now() - sceneStart)
+          };
+          if (shouldRecord) result.tape = self.stopRecording();
+          result.drifts = [];
+          for (var d = 0; d < _sceneProgress.results.length; d++) {
+            var v = _sceneProgress.results[d].verify;
+            if (v && (v.match === false || v.wasDisabled === true)) {
+              result.drifts.push({ step: _sceneProgress.results[d].step, action: _sceneProgress.results[d].action, verify: v });
+            }
+          }
+          _sessionTapes.push({ ts: new Date().toISOString(), url: startUrl, dsl: script, tape: result.tape || [], status: 'timeout' });
+          return result;
         }
-        _sessionTapes.push({
-          ts: new Date().toISOString(),
-          url: startUrl,
-          dsl: script,
-          tape: result.tape || []
-        });
+        var result = { ok: !r.aborted, steps: r.completed, drifts: r.drifts || [] };
+        if (r.aborted) result.status = 'aborted';
+        if (shouldRecord) result.tape = self.stopRecording();
+        _sessionTapes.push({ ts: new Date().toISOString(), url: startUrl, dsl: script, tape: result.tape || [] });
         return result;
       });
     },

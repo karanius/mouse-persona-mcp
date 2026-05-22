@@ -17,7 +17,9 @@
     "glideDurationMs": 600,
     "commentGlideMs": 400,
     "feedbackWait": { "clickMs": 2000, "fillMs": 500 },
-    "typingSpeed": { "minMs": 30, "maxMs": 70 }
+    "typingSpeed": { "minMs": 30, "maxMs": 70 },
+    "actionTimeoutMs": 15000,
+    "sceneTimeoutMs": 90000
   },
   "scroll": {
     "safeZoneTop": 0.30,
