@@ -24,19 +24,19 @@
     "safeZoneBottom": 0.60
   },
   "style": {
-    "rippleColor": "#ef4444",
-    "highlightColor": "#22c55e",
+    "rippleColor": "rgba(99,102,241,0.5)",
+    "highlightColor": "rgba(99,102,241,0.4)",
     "highlightDurationMs": 3000,
     "badge": { "gradientFrom": "#6366f1", "gradientTo": "#8b5cf6" },
     "bubble": {
-      "background": "rgba(15,15,25,0.72)",
-      "borderColor": "rgba(255,255,255,0.12)",
-      "textColor": "rgba(255,255,255,0.93)",
-      "maxWidth": 340,
+      "background": "rgba(255,255,255,0.88)",
+      "borderColor": "rgba(0,0,0,0.08)",
+      "textColor": "#1a1a2e",
+      "maxWidth": 360,
       "borderRadius": 14,
       "fontSize": "13.5px",
       "blurPx": 20
     },
-    "narrator": { "background": "rgba(0,0,0,0.75)", "fontSize": "16px" }
+    "narrator": { "background": "rgba(255,255,255,0.88)", "fontSize": "14px" }
   }
 }

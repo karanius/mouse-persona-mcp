@@ -232,30 +232,30 @@
 
     _cursor = document.createElement('div');
     _cursor.id = 'custom-cursor';
-    _html(_cursor, '<svg width="28" height="34" viewBox="0 0 28 34" fill="none"><g filter="url(#mp-shadow)"><path d="M4 2L4 26L9.5 20.5L14.5 30L18 28.5L13 19H20L4 2Z" fill="white" stroke="#1a1a2e" stroke-width="1.5" stroke-linejoin="round"/></g><defs><filter id="mp-shadow" x="0" y="0" width="28" height="34" filterUnits="userSpaceOnUse"><feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.3"/></filter></defs></svg>');
+    _html(_cursor, '<svg width="28" height="34" viewBox="0 0 28 34" fill="none"><g filter="url(#mp-shadow)"><path d="M4 2L4 26L9.5 20.5L14.5 30L18 28.5L13 19H20L4 2Z" fill="white" stroke="rgba(0,0,0,0.15)" stroke-width="1.2" stroke-linejoin="round"/></g><defs><filter id="mp-shadow" x="-4" y="-2" width="36" height="42" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.15"/></filter></defs></svg>');
     _cursor.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100001;will-change:transform;';
     _root.appendChild(_cursor);
 
     _label = document.createElement('div');
     _label.id = 'cursor-label';
     _label.textContent = _persona;
-    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:linear-gradient(135deg,' + CFG_BADGE_FROM + ',' + CFG_BADGE_TO + ');color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:10px;box-shadow:0 2px 8px rgba(99,102,241,0.4);white-space:nowrap;';
+    _label.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:100000;will-change:transform;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px) saturate(180%);-webkit-backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(99,102,241,0.2);color:#6366f1;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;font-size:11px;font-weight:600;letter-spacing:0.3px;padding:3px 10px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);white-space:nowrap;';
     _root.appendChild(_label);
 
     var css = document.createElement('style');
     css.textContent = [
       '* { cursor: none !important; }',
-      '@keyframes mp-ripple { 0% { transform:scale(0);opacity:0.7 } 50% { transform:scale(1);opacity:0.3 } 100% { transform:scale(1.5);opacity:0 } }',
-      '@keyframes mp-ripple-inner { 0% { transform:scale(0);opacity:1 } 100% { transform:scale(1);opacity:0 } }',
-      '.mp-ripple { position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid ' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;animation:mp-ripple 0.7s ease-out forwards; }',
-      '.mp-ripple-inner { position:fixed;width:16px;height:16px;border-radius:50%;background:' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;animation:mp-ripple-inner 0.5s ease-out forwards; }',
-      '@keyframes mp-thought-in { 0% { transform:scale(0.95) translateY(6px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }',
-      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:' + CFG_BUBBLE_BG + ';backdrop-filter:blur(' + CFG_BUBBLE_BLUR + 'px) saturate(160%);-webkit-backdrop-filter:blur(' + CFG_BUBBLE_BLUR + 'px) saturate(160%);border:1px solid ' + CFG_BUBBLE_BORDER + ';border-radius:' + CFG_BUBBLE_RADIUS + 'px;padding:12px 18px;box-shadow:0 12px 40px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:' + CFG_BUBBLE_FONT + ';font-weight:400;font-style:normal;letter-spacing:0.15px;color:' + CFG_BUBBLE_TEXT + ';max-width:' + CFG_BUBBLE_MAX_W + 'px;line-height:1.55;opacity:0; }',
-      '.mp-thought.visible { animation:mp-thought-in 0.3s ease-out forwards; }',
+      '@keyframes mp-ripple { 0% { transform:scale(0);opacity:0.6 } 50% { transform:scale(1);opacity:0.25 } 100% { transform:scale(1.5);opacity:0 } }',
+      '@keyframes mp-ripple-inner { 0% { transform:scale(0);opacity:0.8 } 100% { transform:scale(1);opacity:0 } }',
+      '.mp-ripple { position:fixed;width:50px;height:50px;border-radius:50%;border:2px solid rgba(99,102,241,0.5);pointer-events:none;z-index:100002;animation:mp-ripple 0.7s ease-out forwards; }',
+      '.mp-ripple-inner { position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(99,102,241,0.6);pointer-events:none;z-index:100002;animation:mp-ripple-inner 0.5s ease-out forwards; }',
+      '@keyframes mp-thought-in { 0% { transform:scale(0.97) translateY(4px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }',
+      '.mp-thought { position:fixed;pointer-events:none;z-index:100003;background:rgba(255,255,255,0.88);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:12px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.5);font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",sans-serif;font-size:13.5px;font-weight:400;font-style:normal;letter-spacing:0.1px;color:#1a1a2e;max-width:360px;line-height:1.55;opacity:0; }',
+      '.mp-thought.visible { animation:mp-thought-in 0.25s cubic-bezier(0.2,0,0,1) forwards; }',
       '.mp-thought .mp-ptr { position:absolute;width:0;height:0;pointer-events:none; }',
-      '.mp-thought .mp-ptr-down { border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid ' + CFG_BUBBLE_BG + '; }',
-      '.mp-thought .mp-ptr-up { border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid ' + CFG_BUBBLE_BG + '; }',
-      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:' + CFG_NARR_BG + ';color:white;padding:16px 32px;font-family:-apple-system,sans-serif;font-size:' + CFG_NARR_FONT + ';font-weight:500;text-align:center;letter-spacing:0.3px;transition:opacity 0.3s ease; }'
+      '.mp-thought .mp-ptr-down { border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid rgba(255,255,255,0.88); }',
+      '.mp-thought .mp-ptr-up { border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid rgba(255,255,255,0.88); }',
+      '.mp-narrate { position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:100004;background:rgba(255,255,255,0.88);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border-top:1px solid rgba(0,0,0,0.06);color:#1a1a2e;padding:12px 32px;font-family:-apple-system,\"SF Pro Text\",sans-serif;font-size:14px;font-weight:500;text-align:center;letter-spacing:0.2px;box-shadow:0 -4px 20px rgba(0,0,0,0.06);transition:opacity 0.3s ease; }'
     ].join('\n');
 
     (document.head || document.documentElement).appendChild(css);
@@ -486,13 +486,13 @@
       // AFTER append + forced reflow so Chromium sees a pre-animation
       // state and actually starts the keyframes.
       var r = document.createElement('div');
-      r.style.cssText = 'position:fixed;width:50px;height:50px;border-radius:50%;border:3px solid ' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;left:' + (x - 25) + 'px;top:' + (y - 25) + 'px;';
+      r.style.cssText = 'position:fixed;width:50px;height:50px;border-radius:50%;border:2px solid rgba(99,102,241,0.5);pointer-events:none;z-index:100002;left:' + (x - 25) + 'px;top:' + (y - 25) + 'px;';
       _root.appendChild(r);
       void r.offsetWidth;
       r.style.animation = 'mp-ripple 0.7s ease-out forwards';
 
       var inner = document.createElement('div');
-      inner.style.cssText = 'position:fixed;width:16px;height:16px;border-radius:50%;background:' + CFG_RIPPLE_COLOR + ';pointer-events:none;z-index:100002;left:' + (x - 8) + 'px;top:' + (y - 8) + 'px;';
+      inner.style.cssText = 'position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(99,102,241,0.6);pointer-events:none;z-index:100002;left:' + (x - 7) + 'px;top:' + (y - 7) + 'px;';
       _root.appendChild(inner);
       void inner.offsetWidth;
       inner.style.animation = 'mp-ripple-inner 0.5s ease-out forwards';
@@ -502,7 +502,7 @@
 
     highlight: function(el) {
       if (!el) return;
-      el.style.outline = '3px solid ' + CFG_HIGHLIGHT_COLOR;
+      el.style.outline = '2px solid rgba(99,102,241,0.4)';
       el.style.outlineOffset = '3px';
       setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, CFG_HIGHLIGHT_MS);
     },
@@ -523,8 +523,8 @@
       var ptr = document.createElement('div');
       ptr.className = 'mp-ptr';
       var icon = document.createElement('span');
-      icon.style.cssText = 'font-style:normal;margin-right:6px;';
-      icon.textContent = '\u{1F4AD}';
+      icon.style.cssText = 'font-style:normal;margin-right:6px;color:#6366f1;font-weight:600;';
+      icon.textContent = '“';
       t.appendChild(icon);
       t.appendChild(document.createTextNode(text));
       t.appendChild(ptr);
@@ -656,7 +656,7 @@
           var bubble = document.getElementById('mp-thought');
           if (bubble) {
             var countdown = document.createElement('span');
-            countdown.style.cssText = 'display:block;margin-top:6px;font-size:11px;opacity:0.5;font-family:-apple-system,sans-serif;';
+            countdown.style.cssText = 'display:block;margin-top:6px;font-size:11px;color:rgba(0,0,0,0.35);font-family:-apple-system,sans-serif;';
             bubble.appendChild(countdown);
             var secsLeft = Math.ceil(readTime / 1000);
             countdown.textContent = secsLeft + 's';
