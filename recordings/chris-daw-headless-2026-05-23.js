@@ -72,23 +72,9 @@ asyncio.run(main())
     @ Sign In
     "3 Let me sign in and see what they offer consultants.
   `);
-  // Playwright clicks Sign In (header button, not the "Sign In →" link)
-  await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+  // Navigate to consultant auth flow directly
+  await page.goto("http://localhost:3000/auth?role=consultant");
   await page.waitForLoadState("networkidle");
-
-  // ── Scene 2: Role Selection ─────────────────────────────────────────
-  console.log("  Scene 2 — Role Selection");
-  await page.waitForTimeout(1000);
-  await scene(`
-    > Chris Daw sees the role selection — the platform distinguishes between immigrants and consultants
-    ~ 1000
-  `);
-  // Playwright clicks Consultant role
-  const consultantBtn = page.locator('text=Consultant').first();
-  if (await consultantBtn.isVisible().catch(() => false)) {
-    await consultantBtn.click();
-    await page.waitForTimeout(1000);
-  }
 
   // ── Scene 3: Login ──────────────────────────────────────────────────
   console.log("  Scene 3 — Login");
@@ -116,8 +102,10 @@ asyncio.run(main())
     await browser.close();
     process.exit(1);
   }
-  await page.goto("http://localhost:3000/consultant-portal");
+  // Platform should redirect to /consultant-portal based on role intent
+  await page.waitForURL("**/consultant-portal**", { timeout: 10000 }).catch(() => {});
   await page.waitForLoadState("networkidle");
+  console.log("  Redirected to:", page.url());
 
   // ── Scene 4: Identity ───────────────────────────────────────────────
   console.log("  Scene 4 — Identity");
