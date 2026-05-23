@@ -467,6 +467,7 @@
         }
         el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ch }));
         el.dispatchEvent(new KeyboardEvent('keyup', kOpts));
+        if (el.scrollHeight > el.clientHeight) el.scrollTop = el.scrollHeight;
         setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
       }
       typeChar();
@@ -926,12 +927,24 @@
           currentTarget = body;
           if (i + 1 < lines.length && lines[i + 1].trim()[0] === '"') {
             var thought = lines[++i].trim().slice(1).trim();
-            steps.push({ match: currentTarget, thought: thought, duration: 30000 });
+            var tMatch = thought.match(/^(\d+)\s+(.+)$/);
+            if (tMatch) {
+              steps.push({ match: currentTarget, thought: tMatch[2], duration: parseInt(tMatch[1], 10) * 1000 });
+            } else {
+              steps.push({ match: currentTarget, thought: thought, duration: 30000 });
+            }
           } else {
             steps.push({ match: currentTarget });
           }
         }
-        else if (op === '"') { steps.push({ match: currentTarget, thought: body, duration: 30000 }); }
+        else if (op === '"') {
+          var tMatch2 = body.match(/^(\d+)\s+(.+)$/);
+          if (tMatch2) {
+            steps.push({ match: currentTarget, thought: tMatch2[2], duration: parseInt(tMatch2[1], 10) * 1000 });
+          } else {
+            steps.push({ match: currentTarget, thought: body, duration: 30000 });
+          }
+        }
         else if (op === '!') { steps.push({ click: { match: body } }); }
         else if (op === '=') {
           var parts = body.split('|');
