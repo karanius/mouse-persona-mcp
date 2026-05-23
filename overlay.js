@@ -15,7 +15,7 @@
   var CFG_GLIDE_MS = _t.glideDurationMs || 600;
   var CFG_COMMENT_GLIDE_MS = _t.commentGlideMs || 400;
   var CFG_THOUGHT_MS = _t.thoughtDurationMs || 4000;
-  var CFG_HUMAN_MS = _t.humanPauseMs || 7000;
+  var CFG_HUMAN_MS = _t.humanPauseMs || 5000;
   var CFG_FEEDBACK_CLICK_MS = _fb.clickMs || 2000;
   var CFG_FEEDBACK_FILL_MS = _fb.fillMs || 500;
   var CFG_TYPE_MIN = _ts.minMs || 30;
@@ -468,7 +468,8 @@
         el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ch }));
         el.dispatchEvent(new KeyboardEvent('keyup', kOpts));
         if (el.scrollHeight > el.clientHeight) el.scrollTop = el.scrollHeight;
-        setTimeout(typeChar, CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN));
+        var typeDelay = _humanPause > 0 ? CFG_TYPE_MIN + Math.random() * (CFG_TYPE_MAX - CFG_TYPE_MIN) : 0;
+        setTimeout(typeChar, typeDelay);
       }
       typeChar();
     });
@@ -541,7 +542,7 @@
 
     think: function(text, durationMs) {
       if (!_root) return;
-      durationMs = durationMs || 3500;
+      durationMs = durationMs || CFG_THOUGHT_MS;
 
       if (_thoughtTimerId) { clearTimeout(_thoughtTimerId); _thoughtTimerId = null; }
       if (_thoughtTimeout) { clearTimeout(_thoughtTimeout); _thoughtTimeout = null; }
@@ -639,7 +640,7 @@
     },
 
     setHuman: function(ms) {
-      _humanPause = (ms === false || ms === 0) ? 0 : (typeof ms === 'number' ? ms : 7000);
+      _humanPause = (ms === false || ms === 0) ? 0 : (typeof ms === 'number' ? ms : CFG_HUMAN_MS);
     },
 
     clear: function() {
@@ -913,7 +914,9 @@
       var self = this;
       var shouldRecord = opts.record !== false;
       var startUrl = location.href;
-      _humanPause = opts.human === false ? 0 : (typeof opts.human === 'number' ? opts.human : CFG_HUMAN_MS);
+      if (opts.human === false) _humanPause = 0;
+      else if (typeof opts.human === 'number') _humanPause = opts.human;
+      else _humanPause = CFG_HUMAN_MS;
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
       var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
@@ -931,7 +934,7 @@
             if (tMatch) {
               steps.push({ match: currentTarget, thought: tMatch[2], duration: parseInt(tMatch[1], 10) * 1000 });
             } else {
-              steps.push({ match: currentTarget, thought: thought, duration: 30000 });
+              steps.push({ match: currentTarget, thought: thought });
             }
           } else {
             steps.push({ match: currentTarget });
@@ -942,7 +945,7 @@
           if (tMatch2) {
             steps.push({ match: currentTarget, thought: tMatch2[2], duration: parseInt(tMatch2[1], 10) * 1000 });
           } else {
-            steps.push({ match: currentTarget, thought: body, duration: 30000 });
+            steps.push({ match: currentTarget, thought: body });
           }
         }
         else if (op === '!') { steps.push({ click: { match: body } }); }
@@ -1015,9 +1018,10 @@
       return this.who();
     },
 
-    x: function(dslOrPersona, maybeDsl) {
-      if (maybeDsl) return this.run(maybeDsl, { persona: dslOrPersona });
-      return this.run(dslOrPersona, {});
+    x: function(dslOrPersona, maybeDsl, opts) {
+      if (typeof maybeDsl === 'string') return this.run(maybeDsl, Object.assign({ persona: dslOrPersona }, opts || {}));
+      if (typeof maybeDsl === 'object' && maybeDsl !== null) return this.run(dslOrPersona, maybeDsl);
+      return this.run(dslOrPersona, opts || {});
     },
 
     d: function(n) {
@@ -1051,7 +1055,7 @@
         'try { chromium = require("playwright").chromium; }',
         'catch { console.error("npm i playwright"); process.exit(1); }',
         '',
-        'const HUMAN = process.argv.includes("--no-human") ? 0 : 7000;',
+        'const HUMAN = process.argv.includes("--no-human") ? 0 : ' + CFG_HUMAN_MS + ';',
         'const OVERLAY = path.resolve(__dirname, "..", "overlay.js");',
         'const PERSONA = ' + JSON.stringify(p) + ';',
         '',

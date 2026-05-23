@@ -12,7 +12,7 @@
     "format": "action + business implication"
   },
   "timing": {
-    "humanPauseMs": 7000,
+    "humanPauseMs": 5000,
     "thoughtDurationMs": 4000,
     "glideDurationMs": 600,
     "commentGlideMs": 400,

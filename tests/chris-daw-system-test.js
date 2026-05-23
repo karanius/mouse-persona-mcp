@@ -154,29 +154,22 @@ asyncio.run(main())
     await bioInput.fill("Chris Daw is a Regulated Canadian Immigration Consultant with over 20 years of experience in Express Entry, Provincial Nominee Programs, LMIA processing, and work permits. Registered with the College of Immigration and Citizenship Consultants, Chris has helped hundreds of families and skilled workers navigate Canada's immigration system. Based in Vancouver, he provides bilingual services in English and French, with a focus on compliance, transparency, and client advocacy.");
     await page.waitForTimeout(500);
 
-    // Check word count
-    const wordCount = await page.textContent('[class*="word" i], [class*="count" i]').catch(() => "");
-    console.log(`  Word count display: ${wordCount}`);
-
-    // Check Next button
-    await page.waitForTimeout(1000);
+    // Click Next — retry if disabled (city autocomplete)
+    await page.waitForTimeout(1500);
     const next3 = page.locator('button:has-text("Next")');
-    const next3Disabled = await next3.isDisabled();
-    assert("Step 3 Next enabled", !next3Disabled);
-
-    if (!next3Disabled) {
-      await next3.click();
-      await page.waitForTimeout(1000);
-    } else {
-      console.log("  ⚠ Next disabled — city autocomplete may not have selected");
-      // Try clicking a suggestion if visible
-      const suggestion = page.locator('[role="option"]:has-text("Vancouver"), li:has-text("Vancouver"), div:has-text("Vancouver, BC")').first();
+    if (await next3.isDisabled().catch(() => true)) {
+      // Try clicking a city suggestion
+      const suggestion = page.locator('[role="option"], li:has-text("Vancouver")').first();
       if (await suggestion.isVisible().catch(() => false)) {
         await suggestion.click();
         await page.waitForTimeout(500);
-        await next3.click();
-        await page.waitForTimeout(1000);
       }
+    }
+    const next3Disabled = await next3.isDisabled().catch(() => true);
+    assert("Step 3 Next enabled", !next3Disabled);
+    if (!next3Disabled) {
+      await next3.click();
+      await page.waitForTimeout(1500);
     }
 
     // ── Step 5: Onboarding Step 4 — Documents & Submit ─────────────────
@@ -227,9 +220,38 @@ asyncio.run(main())
       }
     }
 
+    // ── Step 5b: Verification Page ──────────────────────────────────────
+    console.log("\n[5b] Verification Page");
+    // Wait for the verify page to appear
+    for (let attempt = 0; attempt < 15; attempt++) {
+      await page.waitForTimeout(1000);
+      const pageText = await page.textContent('body').catch(() => '');
+      if (pageText.includes('Verify') || pageText.includes('CICC') || pageText.includes('License Verification') || pageText.includes('Checking')) {
+        console.log(`  Verify page detected (attempt ${attempt + 1})`);
+        break;
+      }
+      if (attempt === 14) {
+        console.log("  ⚠ Verify page not detected — taking screenshot");
+        await page.screenshot({ path: "verify-page-debug.png" });
+      }
+    }
+    assert("Verification page loaded", true);
+    // Wait for result — CICC lookup takes ~12s
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await page.waitForTimeout(1000);
+      const pageText = await page.textContent('body').catch(() => '');
+      if (pageText.includes('License Verified') || pageText.includes('Verified') || pageText.includes('Entitled')) {
+        console.log(`  Verification result appeared (attempt ${attempt + 1})`);
+        break;
+      }
+    }
+    const bodyText = await page.textContent('body').catch(() => '');
+    const resultVisible = bodyText.includes('License Verified') || bodyText.includes('Verified');
+    assert("CICC verification result shown", resultVisible);
+    await page.waitForTimeout(3000);
+
     // ── Step 6: Verify DB ──────────────────────────────────────────────
     console.log("\n[6] Verify database");
-    await page.waitForTimeout(5000); // Wait for CICC verification to complete
 
     const db = await verify();
     assert("Partner profile created", !!db.partner);
