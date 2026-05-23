@@ -27,11 +27,15 @@ async function cleanup() {
 import asyncio, asyncpg
 async def main():
     conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
-    await conn.execute(\\"DELETE FROM partner_profiles WHERE display_name = 'Chris Daw'\\")
-    await conn.execute(\\"DELETE FROM service_providers WHERE name = 'Chris Daw'\\")
+    uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
+    if uid:
+        s = str(uid)
+        await conn.execute(f\\"DELETE FROM documents WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(f\\"DELETE FROM partner_profiles WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(f\\"DELETE FROM service_providers WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(\\"DELETE FROM worker_executions WHERE worker_id LIKE '%cicc%'\\")
+        await conn.execute(f\\"UPDATE users SET role = 'user' WHERE id = '{s}'::uuid\\")
     await conn.execute(\\"DELETE FROM cicc_registry WHERE college_id = 'R409583'\\")
-    await conn.execute(\\"DELETE FROM worker_executions WHERE worker_id LIKE '%cicc%'\\")
-    await conn.execute(\\"UPDATE users SET role = 'user' WHERE email = 'chris@dawimmigration.com'\\")
     await conn.close()
 asyncio.run(main())
 "`, { stdio: "pipe" });
@@ -43,7 +47,11 @@ async function verify() {
 import asyncio, asyncpg, json
 async def main():
     conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
-    pp = await conn.fetchrow(\\"SELECT display_name, status, metadata FROM partner_profiles WHERE display_name = 'Chris Daw'\\")
+    uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
+    pp = None
+    if uid:
+        s = str(uid)
+        pp = await conn.fetchrow(f\\"SELECT display_name, status, metadata FROM partner_profiles WHERE user_id = '{s}'::uuid\\")
     cr = await conn.fetchrow(\\"SELECT college_id, name FROM cicc_registry WHERE college_id = 'R409583'\\")
     we = await conn.fetchval(\\"SELECT COUNT(*) FROM worker_executions WHERE worker_id = 'cicc-registry-lookup'\\")
     result = {

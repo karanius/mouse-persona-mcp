@@ -49,9 +49,44 @@ Pre-built profiles in `personas/` directory (chris-daw.json, kate-lamb.json, pri
 
 `persona.config.json` defines base defaults: timing, scroll, style. Persona profiles override relevant fields at runtime.
 
-## Human Mode
+## Timing (Config-Driven)
 
-ON by default (7s per thought with countdown). Disable: pass `{human: false}` in run() opts.
+All timing comes from `persona.config.json` — no hardcoded values in overlay.js.
+
+| Setting | Default | What it does |
+|---------|---------|--------------|
+| `timing.humanPauseMs` | 5000 | Reading pause per thought (with countdown) |
+| `timing.thoughtDurationMs` | 4000 | Base thought bubble display time |
+| `timing.glideDurationMs` | 600 | Cursor travel animation |
+| `timing.actionTimeoutMs` | 15000 | Max wait per DSL action |
+| `timing.sceneTimeoutMs` | 90000 | Max wait per scene |
+
+**Per-thought duration**: `"N text` where N = seconds. Example: `"3 quick thought` = 3s, `"5 key moment` = 5s. Default (no number) uses `thoughtDurationMs`.
+
+**Human mode**: ON by default (5s pause with countdown). Disable: pass `{human: 0}` in `x()` opts, or `--no-human` flag in replay scripts.
+
+## Scroll Behavior
+
+`_scrollForBubble` detects nested scrollable containers (`overflow-auto`, `overflow-scroll`) and uses `scrollIntoView({ block: 'center' })` instead of `window.scrollBy`. This handles admin dashboards and modals where content lives inside a scrollable div, not the main document.
+
+## Replay Scripts
+
+Pre-built journeys in `personas/`:
+
+```bash
+# Chris Daw — consultant onboarding (9 scenes)
+node personas/chris-daw/replay.js --headed --no-human
+
+# Admin — review and approve (7 scenes)
+node personas/admin/replay.js --headed --no-human
+
+# Return test — Chris logs back in after approval
+node personas/chris-daw/return-test.js
+```
+
+Flags: `--headed` (show browser), `--no-human` (skip reading pauses).
+
+Cleanup uses user_id-based DB queries — all PII fields (display_name, credentials, etc.) are AES-GCM encrypted and cannot be matched by plaintext.
 
 ## Recording (Automatic)
 

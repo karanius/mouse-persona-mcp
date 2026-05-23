@@ -58,10 +58,15 @@ async def main():
         uid, enc_name, enc_bio, enc_license, enc_city, enc_specs, enc_langs
     )
 
-    # E&O document
+    # E&O document — link to an existing file_registry entry if one exists from a prior upload
+    existing_file = await conn.fetchval(
+        "SELECT id FROM file_registry WHERE storage_path LIKE '%' || $1 || '%' ORDER BY created_at DESC LIMIT 1",
+        uid
+    )
+    doc_s3_key = str(existing_file) if existing_file else str(uuid.uuid4())
     await conn.execute(
         "INSERT INTO documents (user_id, doc_type, s3_key, status) VALUES ($1::uuid, 'liability_insurance', $2, 'pending')",
-        uid, str(uuid.uuid4())
+        uid, doc_s3_key
     )
 
     # CICC registry

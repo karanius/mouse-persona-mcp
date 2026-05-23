@@ -344,8 +344,30 @@
     });
   }
 
+  function _findScrollParent(el) {
+    var node = el.parentElement;
+    while (node && node !== document.body && node !== document.documentElement) {
+      var style = getComputedStyle(node);
+      if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+
   function _scrollForBubble(el) {
     if (_inSafeZone(el)) return Promise.resolve();
+    var scrollParent = _findScrollParent(el);
+    if (scrollParent) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return _waitScrollStable(el).then(function() {
+        if (!_inSafeZone(el)) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return _waitScrollStable(el);
+        }
+      });
+    }
     var vh = window.innerHeight;
     var targetY = vh * 0.40;
     var r = el.getBoundingClientRect();

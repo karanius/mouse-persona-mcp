@@ -36,11 +36,15 @@ async function guard(name, condition, page) {
 import asyncio, asyncpg
 async def main():
     conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
-    await conn.execute(\\"DELETE FROM partner_profiles WHERE display_name = 'Chris Daw'\\")
-    await conn.execute(\\"DELETE FROM service_providers WHERE name = 'Chris Daw'\\")
+    uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
+    if uid:
+        s = str(uid)
+        await conn.execute(f\\"DELETE FROM documents WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(f\\"DELETE FROM partner_profiles WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(f\\"DELETE FROM service_providers WHERE user_id = '{s}'::uuid\\")
+        await conn.execute(\\"DELETE FROM worker_executions WHERE worker_id LIKE '%cicc%'\\")
+        await conn.execute(f\\"UPDATE users SET role = 'user' WHERE id = '{s}'::uuid\\")
     await conn.execute(\\"DELETE FROM cicc_registry WHERE college_id = 'R409583'\\")
-    await conn.execute(\\"DELETE FROM worker_executions WHERE worker_id LIKE '%cicc%'\\")
-    await conn.execute(\\"UPDATE users SET role = 'user' WHERE email = 'chris@dawimmigration.com'\\")
     await conn.close()
     print('Chris Daw data cleared')
 asyncio.run(main())
@@ -119,6 +123,8 @@ asyncio.run(main())
   // ── Scene 4: Identity ───────────────────────────────────────────────
   console.log("  Scene 4 — Identity");
   await page.waitForTimeout(2000);
+  // Wait for the schema-driven form to load
+  await page.locator('input[placeholder="Jane Smith"]').waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
   await scene(`
     > Chris Daw arrives at the consultant portal — the onboarding workflow begins
     @ Consultant Portal

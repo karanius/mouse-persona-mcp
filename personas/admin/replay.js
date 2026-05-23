@@ -134,8 +134,11 @@ async function guard(name, condition, page) {
     "3 Profile complete. Good signal.
   `);
 
-  // Scroll down to see more details
-  await page.evaluate(() => window.scrollBy({ top: 300, behavior: 'smooth' }));
+  // Scroll the content container to reveal CICC section
+  await page.evaluate(() => {
+    const container = document.querySelector('.overflow-auto') || document.scrollingElement;
+    container.scrollBy({ top: 300, behavior: 'smooth' });
+  });
   await page.waitForTimeout(1000);
 
   await scene(`
@@ -153,7 +156,10 @@ async function guard(name, condition, page) {
 
   // ── Scene 3b: CICC Evidence Audit ──────────────────────────────────
   console.log("  Scene 3b — CICC Evidence Audit");
-  await page.evaluate(() => window.scrollBy({ top: 200, behavior: 'smooth' }));
+  await page.evaluate(() => {
+    const container = document.querySelector('.overflow-auto') || document.scrollingElement;
+    container.scrollBy({ top: 200, behavior: 'smooth' });
+  });
   await page.waitForTimeout(1000);
 
   await scene(`
@@ -186,7 +192,10 @@ async function guard(name, condition, page) {
 
   // ── Scene 4: Check Documents ────────────────────────────────────────
   console.log("  Scene 4 — Check Documents");
-  await page.evaluate(() => window.scrollBy({ top: 300, behavior: 'smooth' }));
+  await page.evaluate(() => {
+    const container = document.querySelector('.overflow-auto') || document.scrollingElement;
+    container.scrollBy({ top: 300, behavior: 'smooth' });
+  });
   await page.waitForTimeout(1000);
 
   await scene(`
@@ -244,7 +253,10 @@ async function guard(name, condition, page) {
 
   // ── Scene 5: Approve Decision ───────────────────────────────────────
   console.log("  Scene 5 — Approve Decision");
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  await page.evaluate(() => {
+    const container = document.querySelector('.overflow-auto') || document.scrollingElement;
+    container.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   await page.waitForTimeout(1000);
 
   await scene(`
