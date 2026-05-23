@@ -192,7 +192,50 @@ async function guard(name, condition, page) {
   await scene(`
     > Admin reviews uploaded documents — E&O insurance is the critical gate
     @ Insurance
-    " E&O on file. Gate will pass. But I can't see the policy details — coverage amount, expiry date, insurer name. Just a file upload. We should extract those.
+    "3 E&O on file. Let me open and inspect the actual document.
+  `);
+
+  // Click View on the E&O document to open the preview modal
+  const viewBtn = page.locator('button:has-text("View")').first();
+  if (await viewBtn.isVisible().catch(() => false)) {
+    await viewBtn.click({ force: true });
+    await page.waitForTimeout(2000);
+
+    await scene(`
+      > Admin opens the E&O insurance document — inspecting the uploaded certificate
+      "3 Document preview loaded. Let me check the contents.
+    `);
+
+    // Scroll through the document preview
+    const previewImg = page.locator('img[alt*="preview"], img[src*="preview"], .DocPreviewModal img, [class*="preview"] img').first();
+    if (await previewImg.isVisible().catch(() => false)) {
+      await scene(`
+        " Single page PDF. I can see it's an insurance certificate. In production, we'd need to verify: insurer name, coverage amount ($1M minimum), policy period, and named insured.
+        "3 For now, the file is on record and the gate will pass.
+      `);
+    } else {
+      await scene(`
+        " Document loaded but can't render a preview. The file is on record — that's what the gate checks.
+        "3 We should add OCR extraction to pull coverage details automatically.
+      `);
+    }
+
+    // Close the preview modal
+    const closeBtn = page.locator('button:has-text("Close"), button:has-text("×"), [aria-label="Close"]').first();
+    if (await closeBtn.isVisible().catch(() => false)) {
+      await closeBtn.click();
+    } else {
+      // Click the backdrop to close
+      await page.evaluate(() => {
+        const backdrop = document.querySelector('.fixed.inset-0.bg-black\\/70, .fixed.inset-0');
+        if (backdrop) backdrop.click();
+      });
+    }
+    await page.waitForTimeout(1000);
+  }
+
+  await scene(`
+    > Admin finishes document review — E&O gate will pass, but coverage details need future extraction
     @ Express Entry
     "3 Strong specialization set. Four areas including IRB.
     @ English
