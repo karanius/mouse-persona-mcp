@@ -1,0 +1,9 @@
+  Scene 1 — Admin Login
+  Logged in: http://localhost:8000/
+  Scene 2 — Partners Queue
+  Scene 3 — Review Application
+  Scene 4 — Approve
+  [approve] {"id":"e523eaec-14e9-4295-8d8a-fb0b8ec4a550","verify":200,"approve":200,"approveBody":{"data":{"id":"e523eaec-14e9-4295-8d8a-fb0b8ec4a550","user_id":"b1db09df-13f7-402f-93d0-d545e93ce530","taxonomy_path":"consultant","display_name":"Chris Daw","credentials":{"college_id":"R409583"},"status":"approved","verified_at":"2026-05-23T06:44:20.093748+00:00","verified_by":"8c89d6ec-ce6c-4cda-be06-63362b983ce4","rejection_reason":null,"metadata":{"cicc_name":"Christopher Robert Daw","cicc_evidence":{"name":"Christopher Robert Daw","company":"Daw Immigration Solutions Inc","entitled_bool":true,"license_class":"RCIC-IRB - L3","entitled_to_practice":"Yes"},"cicc_verified":true,"cicc_college_id":"R409583","cicc_verified_at":"2026-05-23T06:44:20.068402+00:00","cicc_verified_by":"8c89d6ec-ce6c-4cda-be06-63362b983ce4","cicc_license_class":"RCIC-IRB - L3","cicc_verification_method":"capture","cicc_entitled_to_practice":true},"created_at":"2026-05-23T06:41:03.767734+00:00","onboarding_step":"pending_review","user_email":null,"cicc_verified":true,"cicc_verified_at":"2026-05-23T06:44:20.068402+00:00","cicc_verification_method":"capture"},"meta":{"visitor_id":"","action":"admin.approve"}}}
+  Scene 5 — Confirmed
+Done.
+  [db] 

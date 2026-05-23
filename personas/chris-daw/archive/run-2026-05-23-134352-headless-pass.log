@@ -1,0 +1,19 @@
+Chris Daw data cleared
+  Scene 1 — Discovery
+  Scene 3 — Login
+  Login API: 200
+  Auth token: true
+  Redirected to: http://localhost:3000/consultant-portal
+  Scene 4 — Identity
+  Scene 5 — Specializations
+  Scene 6 — Location & Bio
+  Scene 7 — Documents & Submit
+  [upload] E&O insurance attached
+  [submit] Submit buttons: 1
+  [submit] Button disabled: false
+  [submit] Application submitted
+  Scene 8 — CICC Verification
+  [verify] Waiting for CICC result...
+  [verify] Result appeared (10s)
+  Scene 9 — Verified
+Done.
