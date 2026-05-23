@@ -18,19 +18,32 @@ const OVERLAY = path.resolve(__dirname, "..", "..", "overlay.js");
 const CONFIG = path.resolve(__dirname, "..", "..", "persona.config.json");
 const PERSONA = "Admin";
 
+let _browser;
+async function guard(name, condition, page) {
+  if (!condition) {
+    console.error(`  FAIL: ${name}`);
+    try { await page.screenshot({ path: path.resolve(__dirname, `fail-${Date.now()}.png`) }); } catch {}
+    if (_browser) await _browser.close().catch(() => {});
+    process.exit(1);
+  }
+}
+
 (async () => {
   // ── Seed: Chris Daw with pending application + CICC verified + E&O ──
   const { execSync } = require("child_process");
   try {
     execSync(`docker cp ${path.resolve(__dirname, "seed-chris.py")} canadreamers-platform:/tmp/seed-chris.py`, { stdio: "pipe" });
-    execSync(`docker exec -w /app -e PYTHONPATH=/app canadreamers-platform python3 /tmp/seed-chris.py`, { stdio: "inherit" });
+    const seedOutput = execSync(`docker exec -w /app -e PYTHONPATH=/app canadreamers-platform python3 /tmp/seed-chris.py`, { encoding: "utf-8" });
+    console.log(seedOutput.trim());
+    if (!seedOutput.includes("seeded: 1")) { console.error("FAIL: Seed"); process.exit(1); }
   } catch(e) { console.log("Seed skipped:", e.message); }
 
-  const browser = await chromium.launch({
+  _browser = await chromium.launch({
     headless: !HEADED,
     args: ["--disable-infobars"],
     ignoreDefaultArgs: ["--enable-automation", "--disable-blink-features=AutomationControlled"]
   });
+  const browser = _browser;
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const config = JSON.parse(fs.readFileSync(CONFIG, "utf-8"));
   const configJs = "var __MP_CONFIG__ = " + JSON.stringify(config) + ";\n";
@@ -69,12 +82,19 @@ const PERSONA = "Admin";
   await page.locator('button:has-text("Sign in")').click();
   await page.waitForTimeout(3000);
   console.log("  Logged in:", page.url());
+  await guard("Admin login succeeded", !page.url().includes("login"), page);
 
   // ── Scene 2: Navigate to Partners Queue ─────────────────────────────
   console.log("  Scene 2 — Partners Queue");
   await page.goto(page.url().replace(/\/[^/]*$/, '/partners'));
   await page.waitForLoadState("networkidle");
   await page.waitForTimeout(2000);
+
+  const hasPartnerMgmt = await page.textContent('body').then(t => t.includes('Partner Management')).catch(() => false);
+  await guard("Partners page loaded", hasPartnerMgmt, page);
+
+  const hasChris = await page.textContent('body').then(t => t.includes('Chris Daw')).catch(() => false);
+  await guard("Chris Daw visible in queue", hasChris, page);
 
   await scene(`
     > Admin opens the partner management queue — new consultant applications waiting for compliance review
@@ -86,13 +106,21 @@ const PERSONA = "Admin";
     "3 RCIC from Vancouver. Let me expand and review.
   `);
 
-  // Click on Chris Daw's row to expand (avoid hitting the overlay)
-  await page.evaluate(() => {
-    const el = Array.from(document.querySelectorAll('div, tr, td, span, p'))
-      .find(e => e.textContent.includes('Chris Daw') && !e.closest('#mp-root') && !e.closest('.mp-thought'));
-    if (el) el.click();
-  });
+  // Click Chris's row expand arrow (the chevron, not the text)
+  const expandBtn = page.locator('button:near(:text("Chris Daw"))').first();
+  if (await expandBtn.isVisible().catch(() => false)) {
+    await expandBtn.click({ force: true });
+  } else {
+    // Fallback: click via JS avoiding overlay
+    await page.evaluate(() => {
+      const el = Array.from(document.querySelectorAll('div, tr, td, span, p, button'))
+        .find(e => e.textContent.includes('Chris Daw') && !e.closest('#mp-root') && !e.closest('.mp-thought') && e.offsetParent !== null);
+      if (el) el.click();
+    });
+  }
   await page.waitForTimeout(2000);
+  const expanded = await page.textContent('body').then(t => t.includes('Approve') || t.includes('CICC') || t.includes('R409583')).catch(() => false);
+  await guard("Chris row expanded", expanded, page);
 
   // ── Scene 3: Review Profile ─────────────────────────────────────────
   console.log("  Scene 3 — Review Profile");
@@ -177,6 +205,8 @@ const PERSONA = "Admin";
     return { id: chris.id, verify: vRes.status, approve: aRes.status, approveBody: aBody };
   });
   console.log("  [approve]", JSON.stringify(verifyResult));
+  await guard("Verify API succeeded", verifyResult?.verify === 200, page);
+  await guard("Approve API succeeded", verifyResult?.approve === 200, page);
 
   // ── Scene 6: Confirmed ──────────────────────────────────────────────
   console.log("  Scene 6 — Confirmed");
@@ -192,6 +222,21 @@ const PERSONA = "Admin";
     "3 Next application.
     .
   `);
+
+  // ── DB Guard: Chris must be approved ───────────────────────────────
+  const dbCheck = execSync(`docker exec -w /app -e PYTHONPATH=/app canadreamers-platform python3 -c "
+import asyncio, asyncpg
+async def main():
+    conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
+    uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
+    pp = await conn.fetchrow('SELECT status FROM partner_profiles WHERE user_id = ' + chr(36) + '1::uuid', str(uid))
+    print('PASS' if pp and pp['status'] == 'approved' else 'FAIL')
+    print(f'status={pp[\\"status\\"] if pp else \\"none\\"}')
+    await conn.close()
+asyncio.run(main())
+"`, { encoding: "utf-8" });
+  console.log("  [db]", dbCheck.trim());
+  if (!dbCheck.includes("PASS")) { console.error("  FAIL: DB — Chris not approved"); process.exit(1); }
 
   console.log("Done.");
   await page.waitForTimeout(3000);
