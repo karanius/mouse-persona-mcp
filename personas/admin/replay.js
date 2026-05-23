@@ -98,10 +98,10 @@ async function guard(name, condition, page) {
 
   await scene(`
     > Admin opens the partner management queue — new consultant applications waiting for compliance review
-    @ Partners
+    @ Partner Management
     "3 Partner queue. Let's see who applied.
     @ Pending
-    " One pending application. Chris Daw, R409583. Submitted today.
+    " One pending application. Chris Daw, R409583. Submitted today. No priority indicator though — if we had 50 pending, how would I triage?
     @ Chris Daw
     "3 RCIC from Vancouver. Let me expand and review.
   `);
@@ -127,9 +127,11 @@ async function guard(name, condition, page) {
   await scene(`
     > Admin expands Chris Daw's application — reviewing identity, credentials, and practice details
     @ Chris Daw
-    " Full name matches the College ID. R409583.
+    "3 Name and email visible. No photo though — would help confirm identity.
     @ R409583
-    "3 College ID format is correct. Let me check the verification.
+    "3 College ID format correct. Let me check verification.
+    @ Profile: 100% complete
+    "3 Profile complete. Good signal.
   `);
 
   // Scroll down to see more details
@@ -157,20 +159,29 @@ async function guard(name, condition, page) {
   await scene(`
     > Admin inspects the CICC verification certificate — full audit record from the live register
     @ Verification Certificate
-    "3 Full certificate. Every field.
+    "3 Full certificate. Let me check every field.
     @ Christopher Robert Daw
-    "3 Name from the live register. Not self-reported.
+    "3 Name from the live register. Matches the application.
     @ Daw Immigration Solutions Inc
-    "3 Company on file with the College.
+    "3 Company confirmed. Cross-references with the bio.
     @ RCIC-IRB - L3
-    "3 L3 with IRB authorization. Higher tier.
+    "3 L3 with IRB authorization. He selected IRB Hearings in specializations — that's consistent.
     @ Entitled
-    "3 Entitled to practice. Confirmed.
+    "3 Entitled to practice. Good.
+  `);
+
+  await scene(`
     @ Evidence integrity verified
-    "5 SHA-256 hash matches. Evidence untampered since capture. Audit trail clean.
-    > Complete audit record — name, company, license class, entitled status, timestamp, method, cryptographic integrity hash. Every field traceable to the live CICC register.
+    "5 SHA-256 hash matches. This evidence is sealed — untampered since capture. If anyone had edited this in the database, this would show red.
+    > Cryptographic integrity hash confirms the evidence chain. Every field traceable to the live CICC register.
+  `);
+
+  await scene(`
+    @ Verified
+    "3 Timestamp and method on record.
+    " One thing missing — no E&O expiry date tracked. We know the document is on file but not when it expires. Need to fix that.
     @ Vancouver
-    "3 Bio looks professional.
+    "3 Bio is professional. Twenty years experience stated.
   `);
 
   // ── Scene 4: Check Documents ────────────────────────────────────────
@@ -181,11 +192,11 @@ async function guard(name, condition, page) {
   await scene(`
     > Admin reviews uploaded documents — E&O insurance is the critical gate
     @ Insurance
-    " E&O insurance on file. Required for all RCIC consultants. Gate will pass.
+    " E&O on file. Gate will pass. But I can't see the policy details — coverage amount, expiry date, insurer name. Just a file upload. We should extract those.
     @ Express Entry
-    "3 Specializations: Express Entry, Work Permits, LMIA, IRB Hearings. Strong set.
+    "3 Strong specialization set. Four areas including IRB.
     @ English
-    "3 Bilingual — English and French. Good for a national platform.
+    "3 Bilingual. Good reach.
   `);
 
   // ── Scene 5: Approve Decision ───────────────────────────────────────
@@ -196,7 +207,8 @@ async function guard(name, condition, page) {
   await scene(`
     > Admin is satisfied — all compliance checks pass. Two gates: E&O insurance and CICC verification with evidence.
     @ Approve
-    "5 Everything checks out. CICC verified with evidence from the live register. E&O insurance on file. Profile complete. Both gates will pass. Approving Chris Daw.
+    "5 Both gates will pass. CICC verified with sealed evidence. E&O on file. Profile complete. Approving.
+    " Things to improve for next sprint: E&O expiry tracking, photo ID verification, queue priority scoring, and a second-approver workflow for high-risk applications.
   `);
 
   // First: attach CICC evidence via the verify-with-evidence endpoint
@@ -246,9 +258,9 @@ async function guard(name, condition, page) {
   await scene(`
     > Chris Daw is approved. Both gates passed. He can now access the consultant dashboard and start accepting clients.
     @ Approved
-    "5 Done. Chris Daw is now a verified consultant on the platform. CICC-verified, E&O on file, profile complete.
-    > Approval notification sent. Audit trail recorded. The platform now has a verified RCIC available for client matching.
-    "3 Next application.
+    "3 Done. Chris Daw is live on the platform.
+    > Approval complete. CICC-verified with sealed evidence, E&O on file, integrity hash recorded. Notification sent. Audit trail clean.
+    "3 One verified RCIC added to the directory. Next application.
     .
   `);
 
