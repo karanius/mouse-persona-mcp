@@ -138,8 +138,42 @@ async function guard(name, condition, page) {
 
   await scene(`
     > Admin checks CICC verification status — was this consultant verified against the live register?
-    @ CICC
-    " CICC verified. Christopher Robert Daw, RCIC-IRB L3, entitled to practice. Verified automatically against the live register. Good.
+    @ CICC Verified
+    "3 Green badge. Let me expand and inspect the evidence.
+  `);
+
+  // Click the CICC Verified chevron to expand evidence card
+  const ciccBadge = page.locator('text=CICC Verified').first();
+  if (await ciccBadge.isVisible().catch(() => false)) {
+    await ciccBadge.click({ force: true });
+    await page.waitForTimeout(2000);
+  }
+
+  // ── Scene 3b: CICC Evidence Audit ──────────────────────────────────
+  console.log("  Scene 3b — CICC Evidence Audit");
+  await scene(`
+    > Admin inspects the CICC verification certificate — full audit record from the live register
+    @ Verification Certificate
+    " Full certificate. Let me check every field.
+    @ Christopher Robert Daw
+    "5 Name matches the College ID. Pulled directly from the CICC Public Register. Not self-reported — verified at source.
+    @ Daw Immigration Solutions Inc
+    "3 Company name on file with the College. Matches the bio.
+    @ RCIC-IRB - L3
+    " License class L3 with IRB authorization. This consultant can represent at the Immigration and Refugee Board. That's a higher tier of credentialing.
+    @ Entitled
+    "3 Entitled to practice. Confirmed.
+    @ Evidence integrity verified
+    "5 SHA-256 integrity hash matches. This evidence hasn't been modified since it was captured from the live register. The audit trail is clean.
+  `);
+
+  await page.evaluate(() => window.scrollBy({ top: 200, behavior: 'smooth' }));
+  await page.waitForTimeout(1000);
+
+  await scene(`
+    @ Verified
+    "3 Timestamp and method recorded. Automated iframe lookup.
+    > The verification certificate is a complete audit record — name, company, license class, entitled status, timestamp, method, and cryptographic integrity hash. Every field traceable to the live CICC register.
     @ Vancouver
     "3 Based in Vancouver. Bio looks professional.
   `);
