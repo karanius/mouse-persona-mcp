@@ -314,8 +314,10 @@ async def main():
     conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
     uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
     pp = await conn.fetchrow('SELECT status FROM partner_profiles WHERE user_id = ' + chr(36) + '1::uuid', str(uid))
-    print('PASS' if pp and pp['status'] == 'approved' else 'FAIL')
-    print(f'status={pp[\\"status\\"] if pp else \\"none\\"}')
+    role = await conn.fetchval('SELECT role FROM users WHERE id = ' + chr(36) + '1::uuid', str(uid))
+    ok = pp and pp['status'] == 'approved' and role == 'partner:consultant'
+    print('PASS' if ok else 'FAIL')
+    print(f'status={pp[\\"status\\"] if pp else \\"none\\"} role={role}')
     await conn.close()
 asyncio.run(main())
 "`, { encoding: "utf-8" });

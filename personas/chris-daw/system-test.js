@@ -250,6 +250,19 @@ asyncio.run(main())
     assert("CICC verification result shown", resultVisible);
     await page.waitForTimeout(3000);
 
+    // ── Step 5c: JWT Role Claim ──────────────────────────────────────
+    console.log("\n[5c] JWT Role Claim");
+    const jwtToken = await page.evaluate(() => localStorage.getItem('auth_token'));
+    if (jwtToken) {
+      // Decode JWT payload (base64)
+      const payload = JSON.parse(atob(jwtToken.split('.')[1]));
+      const customRole = payload?.app_metadata?.custom_role;
+      console.log(`  JWT custom_role: ${customRole}`);
+      assert("JWT contains role claim", !!customRole);
+    } else {
+      assert("JWT token exists", false);
+    }
+
     // ── Step 6: Verify DB ──────────────────────────────────────────────
     console.log("\n[6] Verify database");
 

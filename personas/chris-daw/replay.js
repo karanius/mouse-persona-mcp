@@ -255,4 +255,8 @@ asyncio.run(main())
 "`, { encoding: "utf-8" });
   console.log("  [db]", dbCheck.trim());
   if (!dbCheck.includes("PASS")) { console.error("  FAIL: DB verification"); process.exit(1); }
+
+  // Post-approval return test: run after admin approves Chris
+  // node personas/chris-daw/return-test.js
+  // (tests that Chris sees welcome gate, not onboarding form)
 })();
