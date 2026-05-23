@@ -1,0 +1,37 @@
+=== CHRIS ===
+Chris Daw data cleared
+  Scene 1 — Discovery
+  Scene 3 — Login
+  Login API: 200
+  Auth token: true
+  Redirected to: http://localhost:3000/consultant-portal
+  Scene 4 — Identity
+  Scene 5 — Specializations
+  Scene 6 — Location & Bio
+  Scene 7 — Documents & Submit
+  [upload] E&O insurance attached
+  [submit] Submit buttons: 1
+  [submit] Button disabled: false
+  [submit] Application submitted
+  Scene 8 — CICC Verification
+  [verify] Waiting for CICC result...
+  [verify] Result appeared (10s)
+  Scene 9 — Verified
+Done.
+  [db] PASS
+status=pending cicc_verified=True registry=1
+=== ADMIN ===
+Chris Daw seeded: 1 profile(s), pending + CICC verified + E&O on file
+  Scene 1 — Admin Login
+  Logged in: http://localhost:8000/
+  Scene 2 — Partners Queue
+  Scene 3 — Review Profile
+  Scene 3b — CICC Evidence Audit
+  Scene 4 — Check Documents
+  Scene 5 — Approve Decision
+  [approve] {"id":"048161cf-e78d-43eb-abee-ef70c7982d99","verify":200,"approve":200,"approveBody":{"data":{"id":"048161cf-e78d-43eb-abee-ef70c7982d99","user_id":"b1db09df-13f7-402f-93d0-d545e93ce530","taxonomy_path":"consultant.rcic","display_name":"Chris Daw","credentials":{"college_id":"R409583"},"status":"approved","verified_at":"2026-05-23T08:07:07.465787+00:00","verified_by":"8c89d6ec-ce6c-4cda-be06-63362b983ce4","rejection_reason":null,"metadata":{"cicc_name":"Christopher Robert Daw","cicc_evidence":{"name":"Christopher Robert Daw","company":"Daw Immigration Solutions Inc","entitled_bool":true,"license_class":"RCIC-IRB - L3","entitled_to_practice":"Yes"},"cicc_verified":true,"cicc_college_id":"R409583","cicc_verified_at":"2026-05-23T08:07:07.431240+00:00","cicc_verified_by":"8c89d6ec-ce6c-4cda-be06-63362b983ce4","cicc_evidence_hash":"78702d756627133bb52f0ca10a194d53d76c9f8aa77a3aafc427c7de62d04ba3","cicc_license_class":"RCIC-IRB - L3","cicc_verification_method":"capture","cicc_entitled_to_practice":true},"created_at":"2026-05-23T08:06:39.490956+00:00","onboarding_step":"pending_review","user_email":null,"cicc_verified":true,"cicc_verified_at":"2026-05-23T08:07:07.431240+00:00","cicc_verification_method":"capture"},"meta":{"visitor_id":"","action":"admin.approve"}}}
+  Scene 6 — Confirmed
+  [db] PASS
+status=approved
+Done.
+  [db] 
