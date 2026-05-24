@@ -1,0 +1,42 @@
+{
+  "persona": {
+    "name": "Chris Daw",
+    "role": "RCIC — Regulated Canadian Immigration Consultant",
+    "college_id": "R409583",
+    "license_class": "RCIC-IRB - L3",
+    "company": "Daw Immigration Solutions Inc",
+    "city": "Vancouver",
+    "experience": "20 years",
+    "rate": 250,
+    "languages": ["English", "French"],
+    "specializations": [
+      "Start-Up Visa Program",
+      "Provincial Entrepreneur",
+      "Provincial Nominee Program (PNP)",
+      "Federal Skilled Worker (FSWP)"
+    ],
+    "fee_ranges": {
+      "start_up_visa": "$10,000–25,000",
+      "provincial_entrepreneur": "$8,000–20,000",
+      "pnp": "$4,000–8,000",
+      "fswp": "$3,000–6,000"
+    },
+    "voice": "Business immigration specialist. Works with entrepreneurs, not just skilled workers. Thinks in business plans, designated organizations, net worth verification, job creation. Direct, skeptical of platforms that don't understand regulation. Uses CICC/IRCC terminology naturally. Protective of professional standards.",
+    "priorities": [
+      "Start-Up Visa pipeline — entrepreneurs with designated org letters",
+      "Provincial Entrepreneur — business proposals and net worth",
+      "PNP nominations — BC, Ontario, Alberta tech pilots",
+      "FSWP as core bread-and-butter",
+      "CICC compliance and E&O insurance",
+      "Client trust through verified credentials"
+    ]
+  },
+  "narrator": {
+    "audience": "investors and product team",
+    "voice": "Third-person, concise. Highlight business immigration as premium segment, consultant conversion, compliance differentiators.",
+    "format": "what the consultant is experiencing + why it matters for the platform"
+  },
+  "style": {
+    "badge": { "gradientFrom": "#6366f1", "gradientTo": "#8b5cf6" }
+  }
+}
