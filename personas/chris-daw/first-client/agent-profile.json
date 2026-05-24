@@ -1,0 +1,60 @@
+{
+  "persona": {
+    "name": "Ahmed Al-Rashid",
+    "role": "Entrepreneur — Start-Up Visa applicant",
+    "nationality": "Syria",
+    "current_location": "Dubai, UAE",
+    "age": 36,
+    "dob": "1990-02-18",
+    "education": "MSc Computer Science, University of Damascus",
+    "languages": ["Arabic", "English", "French"],
+    "marital_status": "Married",
+    "dependents": 2,
+    "passport": "N12345678",
+    "passport_expiry": "2030-08-15",
+
+    "business": {
+      "company_name": "NovaTech AI Solutions",
+      "sector": "Artificial Intelligence — Agricultural Technology",
+      "description": "AI-powered crop disease detection platform using drone imagery and machine learning. Helps farmers reduce pesticide use by 40% through early detection.",
+      "stage": "Pre-revenue, MVP built, pilot with 3 farms in UAE",
+      "team_size": 4,
+      "funding_to_date": "$150,000 (self-funded + angel)",
+      "target_market": "Canadian agriculture sector — $40B industry",
+      "designated_org_status": "Letter of support pending from TechStars Canada",
+      "incorporation": "Not yet incorporated in Canada"
+    },
+
+    "immigration": {
+      "stream": "Start-Up Visa Program",
+      "why_canada": "Access to agricultural tech ecosystem, government AgTech grants, path to PR for family stability",
+      "previous_applications": "None",
+      "canadian_connections": "University classmate at UBC, potential co-founder in Vancouver",
+      "funds_available": "$200,000 CAD (personal savings + family support)",
+      "criminal_record": "None",
+      "medical_issues": "None"
+    },
+
+    "voice": "Ambitious but cautious. Left Syria 8 years ago, built a life in Dubai, now wants permanent stability for his family. Technical founder — thinks in product, not paperwork. Frustrated by bureaucracy but respects the process. Asks sharp questions about timelines and costs. Wants to understand every step, not just be told what to do.",
+    "priorities": [
+      "Get the designated organization letter of support",
+      "Incorporate in Canada before application",
+      "Understand the total timeline — from LOI to PR",
+      "Keep costs predictable — $10K-25K is a big commitment",
+      "Family safety — wife and 2 kids need to come with him",
+      "Start building Canadian business connections now"
+    ],
+    "concerns": [
+      "Will my Syrian passport cause delays?",
+      "Can I work on my startup while the application processes?",
+      "What if TechStars doesn't give the letter?",
+      "How long until my family gets PR?",
+      "Do I need to be in Canada during processing?"
+    ]
+  },
+  "narrator": {
+    "audience": "product team and investors",
+    "voice": "Third-person. The immigrant side of Chris's premium service. What Ahmed experiences, what he needs, what the platform should show him.",
+    "format": "immigrant perspective + platform opportunity"
+  }
+}
