@@ -337,6 +337,9 @@ asyncio.run(main())
   if (!dbCheck.includes("PASS")) { console.error("  FAIL: DB — Chris not approved"); process.exit(1); }
 
   console.log("Done.");
+  const { saveSession } = require("../session-store");
+  const sessionData = await page.evaluate(() => window.__mp ? window.__mp.session() : null);
+  if (sessionData) { saveSession(__dirname, sessionData); console.log("  Session saved"); }
   await page.waitForTimeout(3000);
   await browser.close();
 

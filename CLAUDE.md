@@ -88,6 +88,14 @@ Flags: `--headed` (show browser), `--no-human` (skip reading pauses).
 
 Cleanup uses user_id-based DB queries — all PII fields (display_name, credentials, etc.) are AES-GCM encrypted and cannot be matched by plaintext.
 
+## Session Memory (Automatic)
+
+Every replay auto-saves the session on exit:
+- `personas/{name}/last-session.json` — overwritten each run (working memory for next drive)
+- `personas/{name}/sessions/{timestamp}.json` — append-only history
+
+On start, replays load `last-session.json` and log the previous session summary. When driving via MCP browser tools, call `window.__mp.sessionJSON()` and save via Bash at the end.
+
 ## Recording (Automatic)
 
 Every `x()` call is automatically accumulated in a session tape. At the end of any journey, export and save:

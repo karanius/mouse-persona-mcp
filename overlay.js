@@ -1059,6 +1059,10 @@
       };
     },
 
+    sessionJSON: function() {
+      return JSON.stringify(this.session(), null, 2);
+    },
+
     exportReplay: function() {
       var p = (_cfg.persona && _cfg.persona.name) || _persona || 'Tester';
       var scenes = _sessionTapes.map(function(s, i) {

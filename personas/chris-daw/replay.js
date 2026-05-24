@@ -54,6 +54,13 @@ asyncio.run(main())
     chrisState = stateCheck === "approved" ? "approved" : stateCheck === "pending" ? "pending" : "new";
   } catch(e) { /* assume new */ }
 
+  // Load previous session memory
+  const { loadLastSession, saveSession } = require("../session-store");
+  const lastSession = loadLastSession(__dirname);
+  if (lastSession) {
+    console.log(`  Previous session: ${lastSession.scenes?.length || 0} scenes from ${lastSession.startedAt || "unknown"}`);
+  }
+
   if (FRESH || chrisState === "new") {
     // Nuke and start fresh
     try {
@@ -158,34 +165,42 @@ asyncio.run(main())
 
   if (seesWelcomeGate || seesDashboard) {
     // ── RETURNING CHRIS: already approved ──────────────────────────────
-    console.log("  Chris is approved — entering dashboard");
+    console.log("  Chris is approved — resetting to fresh dashboard experience");
 
-    if (seesWelcomeGate) {
+    // Clear localStorage so Chris sees: Welcome Gate → Getting Started → Dashboard
+    await page.evaluate(() => {
+      localStorage.removeItem('consultant_welcomed');
+      localStorage.removeItem('consultant_getting_started');
+      sessionStorage.removeItem('consultant-welcome-seen');
+    });
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(2000);
+
+    // Should now see the Welcome Gate
+    await scene(`
+      > Chris Daw returns to the platform — approved, verified, first time entering the portal
+      @ Christopher Robert Daw
+      "3 My full name from the CICC register. Good.
+      @ RCIC
+      "3 Verified badge. Let me enter.
+    `);
+    await page.locator('button:has-text("Enter")').first().click().catch(() => {});
+    await page.waitForTimeout(2000);
+
+    // Should now see the Getting Started wizard
+    const wizardBody = await page.textContent('body').catch(() => '');
+    if (wizardBody.includes('Get Started')) {
+      console.log("  Landed on Getting Started wizard");
       await scene(`
-        > Chris Daw returns to the platform — already verified and approved
-        @ Enter Your Portal
-        "3 I'm back. Let's see what's changed since I was approved.
+        > Chris enters the Getting Started wizard — four steps to set up his practice
+        @ Get Started
+        "3 Four steps. Profile, clients, dashboard, AI. Let me see what's behind each one.
       `);
-      await page.locator('button:has-text("Enter"), a:has-text("Enter")').first().click().catch(() => {});
-      await page.waitForTimeout(2000);
     }
 
-    await scene(`
-      > Chris Daw enters his consultant dashboard for the first time as an approved partner
-      "5 This is it. My practice, on their platform. Let me see what I can do from here.
-    `);
-
-    // Explore whatever the dashboard shows
-    await page.waitForLoadState("networkidle");
-    const dashBody = await page.textContent('body').catch(() => '');
-    console.log("  Dashboard loaded. Content preview:", dashBody.substring(0, 200).replace(/\s+/g, ' '));
-
-    await scene(`
-      " Let me look around. What tools do I have? Client management? Case tracking?
-      "3 First impressions matter. A consultant's dashboard should feel like a command center, not a landing page.
-    `);
-
-    console.log("Done. (returning journey)");
+    console.log("Done. (approved — on Getting Started wizard)");
+    const sess1 = await page.evaluate(() => window.__mp ? window.__mp.session() : null);
+    if (sess1) { saveSession(__dirname, sess1); console.log("  Session saved"); }
     await page.waitForTimeout(3000);
     await browser.close();
     process.exit(0);
@@ -199,6 +214,8 @@ asyncio.run(main())
       " Nothing I can do from here. The admin needs to review my application.
     `);
     console.log("Done. (pending — run admin/replay.js to approve)");
+    const sess2 = await page.evaluate(() => window.__mp ? window.__mp.session() : null);
+    if (sess2) { saveSession(__dirname, sess2); console.log("  Session saved"); }
     await page.waitForTimeout(3000);
     await browser.close();
     process.exit(0);
@@ -325,6 +342,8 @@ asyncio.run(main())
   `);
 
   console.log("Done.");
+  const sess3 = await page.evaluate(() => window.__mp ? window.__mp.session() : null);
+  if (sess3) { saveSession(__dirname, sess3); console.log("  Session saved"); }
   await page.waitForTimeout(5000);
   await browser.close();
 
