@@ -1,0 +1,218 @@
+{
+  "persona": {
+    "name": "Tester",
+    "role": "",
+    "experience": "",
+    "voice": "Neutral observer. States what they see and how they feel about it.",
+    "priorities": []
+  },
+  "narrator": {
+    "audience": "stakeholders",
+    "voice": "Third-person, concise. Describe what the persona is doing and why it matters.",
+    "format": "action + business implication"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-24T04:16:53.696Z",
+      "url": "http://localhost:3000/auth?role=consultant",
+      "dsl": "\n    > Chris Daw logs into his consultant account\n    \"3 Let me use my professional email.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw logs into his consultant account"
+              },
+              {
+                "match": null,
+                "thought": "Let me use my professional email.",
+                "duration": 3000
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:16:59.949Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Chris Daw arrives at the consultant portal — the onboarding workflow begins\n    @ Consultant Portal\n    \"3 Four steps. Reasonable workflow.\n    @ Your Identity\n    \"3 Identity first. Let's see what they validate.\n    @ CICC College ID\n    \" Good — they ask for the College ID, not just a name. That's the right field. But do they check it against the actual register?\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw arrives at the consultant portal — the onboarding workflow begins"
+              },
+              {
+                "match": "Consultant Portal",
+                "thought": "Four steps. Reasonable workflow.",
+                "duration": 3000
+              },
+              {
+                "match": "Your Identity",
+                "thought": "Identity first. Let's see what they validate.",
+                "duration": 3000
+              },
+              {
+                "match": "CICC College ID",
+                "thought": "Good — they ask for the College ID, not just a name. That's the right field. But do they check it against the actual register?"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:17:02.937Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Step 2 — Chris Daw selects specializations\n    @ Your Practice\n    \"3 Specializations and languages. Standard intake.\n    @ Express Entry\n    \" Express Entry — that's my bread and butter. Twenty years of CRS calculations.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Step 2 — Chris Daw selects specializations"
+              },
+              {
+                "match": "Your Practice",
+                "thought": "Specializations and languages. Standard intake.",
+                "duration": 3000
+              },
+              {
+                "match": "Express Entry",
+                "thought": "Express Entry — that's my bread and butter. Twenty years of CRS calculations."
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:17:06.178Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Step 3 — Location and bio\n    @ Location & Bio\n    \"3 City and bio. Public-facing.\n    @ Professional Bio\n    \" Fifty-word minimum. Fair enough — clients need to know who they're hiring.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Step 3 — Location and bio"
+              },
+              {
+                "match": "Location & Bio",
+                "thought": "City and bio. Public-facing.",
+                "duration": 3000
+              },
+              {
+                "match": "Professional Bio",
+                "thought": "Fifty-word minimum. Fair enough — clients need to know who they're hiring."
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:17:11.145Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Step 4 — Documents and insurance\n    @ Documents & Insurance\n    \"3 E&O insurance and supporting docs.\n    @ Professional Liability Insurance\n    \" Minimum one million per claim, current policy year, named insured. They know the ENCON requirements. Impressive.\n    @ Submit Application\n    \"5 Let's see what happens. If they really verify against the CICC register, my name should come back.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Step 4 — Documents and insurance"
+              },
+              {
+                "match": "Documents & Insurance",
+                "thought": "E&O insurance and supporting docs.",
+                "duration": 3000
+              },
+              {
+                "match": "Professional Liability Insurance",
+                "thought": "Minimum one million per claim, current policy year, named insured. They know the ENCON requirements. Impressive."
+              },
+              {
+                "match": "Submit Application",
+                "thought": "Let's see what happens. If they really verify against the CICC register, my name should come back.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:17:16.248Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Chris Daw's application is submitted — the platform now verifies his credentials\n    \"3 They're checking the register automatically. No button to click.\n    \"5 This is the moment. If they're really checking the live register, my full name should come back.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw's application is submitted — the platform now verifies his credentials"
+              },
+              {
+                "match": null,
+                "thought": "They're checking the register automatically. No button to click.",
+                "duration": 3000
+              },
+              {
+                "match": null,
+                "thought": "This is the moment. If they're really checking the live register, my full name should come back.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:17:28.292Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n    > Christopher Robert Daw — verified against the live CICC register\n    \"5 They pulled my full name from the CICC register. Christopher Robert Daw. That's real verification.\n    \" License class IRB — they even know I can do IRB hearings.\n    \"5 Entitled to practice. Confirmed. First platform that checks automatically.\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Christopher Robert Daw — verified against the live CICC register"
+              },
+              {
+                "match": null,
+                "thought": "They pulled my full name from the CICC register. Christopher Robert Daw. That's real verification.",
+                "duration": 5000
+              },
+              {
+                "match": null,
+                "thought": "License class IRB — they even know I can do IRB hearings."
+              },
+              {
+                "match": null,
+                "thought": "Entitled to practice. Confirmed. First platform that checks automatically.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-24T04:16:53.696Z"
+}

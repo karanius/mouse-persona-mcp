@@ -1,0 +1,52 @@
+{
+  "persona": {
+    "name": "Tester",
+    "role": "",
+    "experience": "",
+    "voice": "Neutral observer. States what they see and how they feel about it.",
+    "priorities": []
+  },
+  "narrator": {
+    "audience": "stakeholders",
+    "voice": "Third-person, concise. Describe what the persona is doing and why it matters.",
+    "format": "action + business implication"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-24T04:18:11.140Z",
+      "url": "http://localhost:8000/partners",
+      "dsl": "\n    > Chris Daw is approved. Both gates passed. He can now access the consultant dashboard and start accepting clients.\n    @ Approved\n    \"3 Done. Chris Daw is live on the platform.\n    > Approval complete. CICC-verified with sealed evidence, E&O on file, integrity hash recorded. Notification sent. Audit trail clean.\n    \"3 One verified RCIC added to the directory. Next application.\n    .\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw is approved. Both gates passed. He can now access the consultant dashboard and start accepting clients."
+              },
+              {
+                "match": "Approved",
+                "thought": "Done. Chris Daw is live on the platform.",
+                "duration": 3000
+              },
+              {
+                "narrate": "Approval complete. CICC-verified with sealed evidence, E&O on file, integrity hash recorded. Notification sent. Audit trail clean."
+              },
+              {
+                "match": "Approved",
+                "thought": "One verified RCIC added to the directory. Next application.",
+                "duration": 3000
+              },
+              {
+                "clear": true,
+                "clearNarrate": true
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-24T04:18:11.140Z"
+}

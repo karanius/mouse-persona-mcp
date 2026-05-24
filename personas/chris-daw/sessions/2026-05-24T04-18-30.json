@@ -1,0 +1,68 @@
+{
+  "persona": {
+    "name": "Tester",
+    "role": "",
+    "experience": "",
+    "voice": "Neutral observer. States what they see and how they feel about it.",
+    "priorities": []
+  },
+  "narrator": {
+    "audience": "stakeholders",
+    "voice": "Third-person, concise. Describe what the persona is doing and why it matters.",
+    "format": "action + business implication"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-24T04:18:28.122Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n      > Chris Daw returns to the platform — approved, verified, first time entering the portal\n      @ Christopher Robert Daw\n      \"3 My full name from the CICC register. Good.\n      @ RCIC\n      \"3 Verified badge. Let me enter.\n    ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw returns to the platform — approved, verified, first time entering the portal"
+              },
+              {
+                "match": "Christopher Robert Daw",
+                "thought": "My full name from the CICC register. Good.",
+                "duration": 3000
+              },
+              {
+                "match": "RCIC",
+                "thought": "Verified badge. Let me enter.",
+                "duration": 3000
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-24T04:18:30.675Z",
+      "url": "http://localhost:3000/consultant-portal",
+      "dsl": "\n        > Chris enters the Getting Started wizard — four steps to set up his practice\n        @ Get Started\n        \"3 Four steps. Profile, clients, dashboard, AI. Let me see what's behind each one.\n      ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris enters the Getting Started wizard — four steps to set up his practice"
+              },
+              {
+                "match": "Get Started",
+                "thought": "Four steps. Profile, clients, dashboard, AI. Let me see what's behind each one.",
+                "duration": 3000
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-24T04:18:28.122Z"
+}
