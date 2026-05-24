@@ -52,6 +52,17 @@
   var _humanPause = 0;
   var _mpClickInProgress = false;
   var _sessionTapes = [];
+
+  // Auto-load persona profile + session memory from injected globals
+  if (typeof __MP_AGENT_PROFILE__ !== 'undefined' && __MP_AGENT_PROFILE__) {
+    var _autoProfile = __MP_AGENT_PROFILE__;
+    if (_autoProfile.persona && _autoProfile.persona.name) {
+      _persona = _autoProfile.persona.name;
+    }
+  }
+  if (typeof __MP_LAST_SESSION__ !== 'undefined' && __MP_LAST_SESSION__ && __MP_LAST_SESSION__.scenes) {
+    _sessionTapes = __MP_LAST_SESSION__.scenes.slice();
+  }
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
     : { createHTML: function(s) { return s; } };
@@ -1162,5 +1173,14 @@
     });
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
     if (_injected) observer.disconnect();
+  }
+
+  // Auto-load persona from injected profile after overlay is ready
+  if (typeof __MP_AGENT_PROFILE__ !== 'undefined' && __MP_AGENT_PROFILE__) {
+    setTimeout(function() {
+      if (window.__mp && window.__mp.loadPersona) {
+        window.__mp.loadPersona(__MP_AGENT_PROFILE__);
+      }
+    }, 200);
   }
 })();
