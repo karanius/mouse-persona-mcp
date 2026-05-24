@@ -32,8 +32,15 @@ Ahmed Al-Rashid — Syrian tech founder, AgTech AI startup, Dubai → Vancouver
 - [Act 4 — The Case](startup-visa-program/act-4-case.md) — Chris manages Ahmed's Start-Up Visa application
 - [Act 5 — The Journey](startup-visa-program/act-5-journey.md) — Application submitted, both portals track to decision
 
-### Provincial Entrepreneur
-*Coming next*
+### [Provincial Entrepreneur](provincial-entrepreneur/)
+Priya Mehta — Indian textile manufacturer, 85 employees, Mumbai → Surrey, BC
+
+- [Act 0 — Discovery](provincial-entrepreneur/act-0-discovery.md) — Priya hears from her son at UBC
+- [Act 1 — The Consultant](provincial-entrepreneur/act-1-consultant.md) — Chris is already approved (shared)
+- [Act 2 — The Immigrant](provincial-entrepreneur/act-2-immigrant.md) — Priya signs up, business profile + net worth
+- [Act 3 — The Match](provincial-entrepreneur/act-3-match.md) — Consultation, $12K retainer, 2-stage process explained
+- [Act 4 — The Case](provincial-entrepreneur/act-4-case.md) — Exploratory visit, net worth verification, business proposal, work permit
+- [Act 5 — The Journey](provincial-entrepreneur/act-5-journey.md) — Landing → 20 months operations → 8 jobs → nomination → PR
 
 ### Provincial Nominee Program (PNP)
 *Coming next*

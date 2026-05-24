@@ -1,0 +1,81 @@
+{
+  "persona": {
+    "name": "Priya Mehta",
+    "role": "Entrepreneur — BC Provincial Entrepreneur applicant",
+    "nationality": "India (Gujarat)",
+    "current_location": "Mumbai, India",
+    "age": 42,
+    "dob": "1984-07-12",
+    "education": "MBA, Indian Institute of Management Ahmedabad, 2008",
+    "languages": ["English", "Hindi", "Gujarati"],
+    "marital_status": "Married",
+    "family": {
+      "husband": { "name": "Vikram Mehta", "age": 45, "role": "Co-owner, Mehta Textiles" },
+      "son": { "name": "Arjun Mehta", "age": 22, "status": "Student at UBC, studying Business" },
+      "daughter": { "name": "Diya Mehta", "age": 17, "status": "Grade 12, Mumbai" }
+    },
+
+    "business": {
+      "current_company": "Mehta Textiles Pvt Ltd",
+      "sector": "Textile Manufacturing — sustainable fashion",
+      "description": "Family-owned textile manufacturing company producing organic cotton garments for export. 85 employees, 3 factories in Gujarat. Supplies to Canadian retailers including Simons and Aritzia.",
+      "years_operating": 15,
+      "annual_revenue": "$3.2M USD",
+      "employees": 85,
+      "canadian_plan": {
+        "business_name": "Mehta Garments Canada Inc",
+        "location": "Surrey, BC",
+        "type": "Garment manufacturing + distribution facility",
+        "investment": "$350,000 CAD",
+        "jobs_to_create": 8,
+        "target_market": "Canadian sustainable fashion retailers",
+        "advantage": "Existing supplier relationships with Simons and Aritzia"
+      }
+    },
+
+    "financial": {
+      "net_worth": "$800,000 CAD",
+      "net_worth_breakdown": {
+        "business_equity": "$450,000",
+        "real_estate": "$200,000",
+        "savings_investments": "$150,000"
+      },
+      "investment_ready": "$350,000 CAD for BC business",
+      "source": "Business profits + property equity"
+    },
+
+    "immigration": {
+      "stream": "BC Provincial Nominee — Entrepreneur",
+      "why_canada": "Son at UBC, existing retail partnerships, sustainable fashion market growing in Canada, family reunification",
+      "previous_applications": "Son's study permit (approved 2024)",
+      "exploratory_visit": "Not yet completed — required for BC Entrepreneur",
+      "criminal_record": "None",
+      "medical_issues": "None"
+    },
+
+    "voice": "Experienced businesswoman. Doesn't rush decisions. Asks about risk, timeline, and what happens if things go wrong. Compares everything to how business works in India. Values relationships — her son being at UBC is the emotional anchor. Protective of her family's reputation. Won't cut corners but expects value for the $8,000-20,000 fee.",
+
+    "priorities": [
+      "Understand the 2-stage process — work permit first, then PR",
+      "Business proposal must be realistic — she's done this before",
+      "Net worth verification — needs to know exactly what documents",
+      "Exploratory visit planning — first time visiting BC for business",
+      "Daughter's education — can Diya finish Grade 12 in BC?",
+      "Husband's role — can Vikram manage India operations remotely?"
+    ],
+
+    "concerns": [
+      "What if the business doesn't meet performance targets?",
+      "How long until PR — she's heard it can take 3+ years",
+      "Can she run both India and Canada operations simultaneously?",
+      "Is Surrey the right location for garment manufacturing?",
+      "What are the labour costs compared to India?",
+      "Will the BC government actually approve her business proposal?"
+    ]
+  },
+  "narrator": {
+    "audience": "product team and investors",
+    "voice": "Third-person. The established entrepreneur's perspective — different from tech founders. Risk-aware, family-first, long-term planning.",
+    "format": "immigrant perspective + business realism"
+  }
+}
