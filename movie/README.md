@@ -42,8 +42,15 @@ Priya Mehta — Indian textile manufacturer, 85 employees, Mumbai → Surrey, BC
 - [Act 4 — The Case](provincial-entrepreneur/act-4-case.md) — Exploratory visit, net worth verification, business proposal, work permit
 - [Act 5 — The Journey](provincial-entrepreneur/act-5-journey.md) — Landing → 20 months operations → 8 jobs → nomination → PR
 
-### Provincial Nominee Program (PNP)
-*Coming next*
+### [Provincial Nominee Program — BC PNP Tech](pnp/)
+Jun-seo Park — Korean robotics engineer, Hyundai → Sanctuary AI, Seoul → Vancouver
+
+- [Act 0 — Discovery](pnp/act-0-discovery.md) — LinkedIn recruiter from Sanctuary AI
+- [Act 1 — The Consultant](pnp/act-1-consultant.md) — Chris already approved (shared)
+- [Act 2 — The Immigrant](pnp/act-2-immigrant.md) — Jun-seo signs up, CRS 430, job offer entered
+- [Act 3 — The Match](pnp/act-3-match.md) — Employer recommends Chris, $5K retainer, speed priority
+- [Act 4 — The Case](pnp/act-4-case.md) — BC PNP nomination (6 weeks), ITA automatic at CRS 1030
+- [Act 5 — The Journey](pnp/act-5-journey.md) — Work permit → Sanctuary AI → PR in 8 months
 
 ### Federal Skilled Worker (FSWP)
 *Coming next*

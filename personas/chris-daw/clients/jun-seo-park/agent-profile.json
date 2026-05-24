@@ -1,0 +1,77 @@
+{
+  "persona": {
+    "name": "Jun-seo Park",
+    "role": "Robotics Engineer — BC PNP Tech applicant",
+    "nationality": "South Korea",
+    "current_location": "Seoul, South Korea",
+    "age": 29,
+    "dob": "1997-03-22",
+    "education": "BEng Mechanical Engineering, KAIST (Korea Advanced Institute of Science and Technology), 2019",
+    "languages": ["Korean", "English"],
+    "marital_status": "Single",
+    "dependents": 0,
+    "passport": "M87654321",
+    "passport_expiry": "2032-11-30",
+
+    "career": {
+      "current_employer": "Hyundai Robotics",
+      "current_title": "Senior Robotics Engineer",
+      "years_experience": 5,
+      "specialization": "Industrial robot arm kinematics, computer vision integration, ROS2",
+      "noc_code": "21311 — Mechanical engineers",
+      "salary_current": "₩85,000,000/year (~$85K CAD)",
+      "notable_projects": [
+        "Led design of HA006B collaborative robot arm",
+        "Computer vision QC system for Hyundai Motor assembly line",
+        "3 patents in robotic manipulation"
+      ]
+    },
+
+    "canadian_opportunity": {
+      "employer": "Sanctuary AI",
+      "location": "Vancouver, BC",
+      "title": "Robotics Software Engineer",
+      "salary_offered": "$120,000 CAD + stock options",
+      "noc_code": "21311",
+      "why_recruited": "Sanctuary AI building humanoid robots — needs kinematics expertise that's rare in Canada",
+      "job_offer_status": "Conditional offer — pending work authorization",
+      "start_date": "As soon as possible"
+    },
+
+    "immigration": {
+      "stream": "BC PNP Tech — Skilled Worker",
+      "crs_without_pnp": 430,
+      "crs_with_pnp": 1030,
+      "ielts": { "overall": 7.0, "L": 7.5, "R": 7.0, "W": 6.5, "S": 7.0 },
+      "clb": 7,
+      "previous_applications": "None",
+      "criminal_record": "None — completed mandatory military service 2019-2021",
+      "medical_issues": "None"
+    },
+
+    "voice": "Young, technically brilliant, slightly impatient with bureaucracy. Thinks in engineering terms — wants to optimize the process, understand the critical path, eliminate bottlenecks. First time navigating immigration — everything is new. Trusts systems more than people. Asks 'why' before 'how'. Motivated by the opportunity at Sanctuary AI, not just PR status.",
+
+    "priorities": [
+      "Get to Vancouver as fast as possible — Sanctuary AI is waiting",
+      "Understand the timeline — weeks? months?",
+      "CRS 430 isn't enough on its own — PNP nomination is the strategy",
+      "Keep the job offer alive — conditional offers can expire",
+      "Military service documentation — will Korea's mandatory service cause issues?",
+      "Don't overpay — $4,000-8,000 is a lot for a 29-year-old engineer"
+    ],
+
+    "concerns": [
+      "What if Sanctuary AI rescinds the offer during processing?",
+      "Is BC PNP Tech really as fast as they say?",
+      "My CRS is 430 — am I wasting money on Express Entry without PNP?",
+      "I did 18 months military service — does that affect anything?",
+      "Can I start working remotely for Sanctuary while I wait?",
+      "What happens if I want to change employers after I arrive?"
+    ]
+  },
+  "narrator": {
+    "audience": "product team and investors",
+    "voice": "Third-person. The young skilled worker perspective — employer-driven, speed-focused, first-time immigrant navigating a system designed for families and entrepreneurs.",
+    "format": "immigrant perspective + tech talent retention angle"
+  }
+}
