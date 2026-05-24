@@ -20,12 +20,26 @@ Three people. Three portals. One journey.
 
 ## Acts
 
-- [Act 0 — Discovery](act-0-discovery.md) — Ahmed finds CanaDREAMERS
-- [Act 1 — The Consultant](act-1-consultant.md) — Chris registers and gets approved
-- [Act 2 — The Immigrant](act-2-immigrant.md) — Ahmed signs up and builds his profile
-- [Act 3 — The Match](act-3-match.md) — Ahmed finds Chris, books consultation, signs retainer
-- [Act 4 — The Case](act-4-case.md) — Chris manages Ahmed's Start-Up Visa application
-- [Act 5 — The Journey](act-5-journey.md) — Application submitted, both portals track to decision
+## Programs
+
+### [Start-Up Visa Program](startup-visa-program/)
+Ahmed Al-Rashid — Syrian tech founder, AgTech AI startup, Dubai → Vancouver
+
+- [Act 0 — Discovery](startup-visa-program/act-0-discovery.md) — Ahmed finds CanaDREAMERS
+- [Act 1 — The Consultant](startup-visa-program/act-1-consultant.md) — Chris registers and gets approved
+- [Act 2 — The Immigrant](startup-visa-program/act-2-immigrant.md) — Ahmed signs up and builds his profile
+- [Act 3 — The Match](startup-visa-program/act-3-match.md) — Ahmed finds Chris, books consultation, signs retainer
+- [Act 4 — The Case](startup-visa-program/act-4-case.md) — Chris manages Ahmed's Start-Up Visa application
+- [Act 5 — The Journey](startup-visa-program/act-5-journey.md) — Application submitted, both portals track to decision
+
+### Provincial Entrepreneur
+*Coming next*
+
+### Provincial Nominee Program (PNP)
+*Coming next*
+
+### Federal Skilled Worker (FSWP)
+*Coming next*
 
 ## Production Notes
 

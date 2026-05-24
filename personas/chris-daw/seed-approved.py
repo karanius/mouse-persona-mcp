@@ -39,6 +39,10 @@ async def main():
     enc_creds = encrypt_field(json.dumps({'college_id': 'R409583'}))
 
     meta = json.dumps({
+        'insurance': {
+            'doc_type': 'liability_insurance',
+            'uploaded_at': '2026-05-24T00:00:00+00:00',
+        },
         'cicc_verified': True,
         'cicc_verified_at': '2026-05-23T04:00:00Z',
         'cicc_verified_by': 'automated_iframe_lookup',
