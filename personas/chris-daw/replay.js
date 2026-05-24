@@ -29,10 +29,35 @@ async function guard(name, condition, page) {
 }
 
 (async () => {
-  // ── Pre-run cleanup ────────────────────────────────────────────────────
+  // ── Pre-run: detect Chris's current state ──────────────────────────────
   const { execSync } = require("child_process");
+  const FRESH = process.argv.includes("--fresh");
+  let chrisState = "new"; // new | pending | approved
   try {
-    execSync(`docker exec canadreamers-platform python3 -c "
+    const stateCheck = execSync(`docker exec canadreamers-platform python3 -c "
+import asyncio, asyncpg
+async def main():
+    conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
+    uid = await conn.fetchval(\\"SELECT id FROM users WHERE email = 'chris@dawimmigration.com'\\")
+    if not uid:
+        print('new')
+    else:
+        s = str(uid)
+        pp = await conn.fetchrow(f\\"SELECT status FROM partner_profiles WHERE user_id = '{s}'::uuid\\")
+        if not pp:
+            print('new')
+        else:
+            print(pp['status'])
+    await conn.close()
+asyncio.run(main())
+"`, { encoding: "utf-8" }).trim();
+    chrisState = stateCheck === "approved" ? "approved" : stateCheck === "pending" ? "pending" : "new";
+  } catch(e) { /* assume new */ }
+
+  if (FRESH || chrisState === "new") {
+    // Nuke and start fresh
+    try {
+      execSync(`docker exec canadreamers-platform python3 -c "
 import asyncio, asyncpg
 async def main():
     conn = await asyncpg.connect('postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable')
@@ -49,7 +74,10 @@ async def main():
     print('Chris Daw data cleared')
 asyncio.run(main())
 "`, { stdio: "inherit" });
-  } catch(e) { console.log("Cleanup skipped:", e.message); }
+    } catch(e) { console.log("Cleanup skipped:", e.message); }
+  } else {
+    console.log(`Chris is ${chrisState} — skipping cleanup, resuming journey`);
+  }
 
   _browser = await chromium.launch({
     headless: !HEADED,
@@ -120,9 +148,64 @@ asyncio.run(main())
   console.log("  Redirected to:", page.url());
   await guard("Redirected to consultant-portal", page.url().includes("consultant-portal"), page);
 
-  // ── Scene 4: Identity ───────────────────────────────────────────────
-  console.log("  Scene 4 — Identity");
+  // ── Fork: detect what Chris sees ────────────────────────────────────
   await page.waitForTimeout(2000);
+  const pageBody = await page.textContent('body').catch(() => '');
+  const seesWelcomeGate = pageBody.includes('Enter Your Portal') || pageBody.includes('Welcome back');
+  const seesDashboard = pageBody.includes('Dashboard') && !pageBody.includes('Your Identity');
+  const seesOnboarding = pageBody.includes('Your Identity') || pageBody.includes('Step 1');
+  const seesPending = pageBody.includes('Application Under Review') || pageBody.includes('Pending');
+
+  if (seesWelcomeGate || seesDashboard) {
+    // ── RETURNING CHRIS: already approved ──────────────────────────────
+    console.log("  Chris is approved — entering dashboard");
+
+    if (seesWelcomeGate) {
+      await scene(`
+        > Chris Daw returns to the platform — already verified and approved
+        @ Enter Your Portal
+        "3 I'm back. Let's see what's changed since I was approved.
+      `);
+      await page.locator('button:has-text("Enter"), a:has-text("Enter")').first().click().catch(() => {});
+      await page.waitForTimeout(2000);
+    }
+
+    await scene(`
+      > Chris Daw enters his consultant dashboard for the first time as an approved partner
+      "5 This is it. My practice, on their platform. Let me see what I can do from here.
+    `);
+
+    // Explore whatever the dashboard shows
+    await page.waitForLoadState("networkidle");
+    const dashBody = await page.textContent('body').catch(() => '');
+    console.log("  Dashboard loaded. Content preview:", dashBody.substring(0, 200).replace(/\s+/g, ' '));
+
+    await scene(`
+      " Let me look around. What tools do I have? Client management? Case tracking?
+      "3 First impressions matter. A consultant's dashboard should feel like a command center, not a landing page.
+    `);
+
+    console.log("Done. (returning journey)");
+    await page.waitForTimeout(3000);
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (seesPending) {
+    console.log("  Chris is pending — waiting for admin approval");
+    await scene(`
+      > Chris Daw's application is pending admin review
+      "3 Still waiting. Application submitted, CICC verified, but not yet approved.
+      " Nothing I can do from here. The admin needs to review my application.
+    `);
+    console.log("Done. (pending — run admin/replay.js to approve)");
+    await page.waitForTimeout(3000);
+    await browser.close();
+    process.exit(0);
+  }
+
+  // ── FIRST-TIME CHRIS: onboarding flow ─────────────────────────────
+  console.log("  Scene 4 — Identity");
   // Wait for the schema-driven form to load
   await page.locator('input[placeholder="Jane Smith"]').waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
   await scene(`
