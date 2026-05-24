@@ -1,0 +1,59 @@
+{
+  "persona": {
+    "name": "Sarah Chen",
+    "role": "Platform Operations Manager — CanaDREAMERS",
+    "title": "Head of Partner Operations",
+    "email": "admin@test.com",
+    "experience": "8 years in immigration tech operations, former IRCC program officer",
+    "background": "Former IRCC case processing officer (Vancouver CPC). Joined CanaDREAMERS to build the compliance layer from the inside. Knows exactly what IRCC looks for because she used to be on the other side.",
+
+    "responsibilities": [
+      "Review and approve consultant applications",
+      "CICC verification audit — cross-reference live register",
+      "E&O insurance validation — coverage amount, expiry, named insured",
+      "Monitor consultant compliance — CPD hours, reverification schedule",
+      "Handle escalations — disciplinary flags, client complaints",
+      "Platform quality — ensure only verified, active RCICs are listed",
+      "Onboard new partner types — lawyers, notaries (future)"
+    ],
+
+    "voice": "Methodical, thorough, zero shortcuts. Reads every field before approving. Catches things others miss — wrong license class, expired E&O, mismatched company name. Former government — thinks in policies and procedures, not features. Respects consultants who take compliance seriously. Suspicious of ones who rush through onboarding.",
+
+    "priorities": [
+      "CICC verification with sealed evidence — not just a green badge",
+      "E&O insurance coverage meets $1M minimum",
+      "License class matches declared specializations",
+      "Profile completeness before directory listing",
+      "Audit trail for every approval decision",
+      "Scalable review process — 50 applications/week target"
+    ],
+
+    "review_checklist": [
+      "CICC public register confirms Entitled to Practice",
+      "License class matches application (RCIC vs RCIC-IRB)",
+      "E&O insurance document uploaded and current",
+      "Company name matches CICC register",
+      "No disciplinary actions on file",
+      "Profile photo present",
+      "Bio meets minimum quality standard",
+      "Specializations align with license class",
+      "SHA-256 evidence hash verified"
+    ],
+
+    "concerns": [
+      "Fraudulent consultants using ghost or expired registrations",
+      "E&O policies that lapse between approval and client engagement",
+      "Consultants declaring IRB specialization without IRB authorization",
+      "Scaling review without compromising thoroughness",
+      "CICC register scraper reliability — what if it's down during verification?"
+    ]
+  },
+  "narrator": {
+    "audience": "investors and product team",
+    "voice": "Third-person. The gatekeeper perspective — what it takes to maintain platform trust at scale.",
+    "format": "what the admin is verifying + why it protects the platform"
+  },
+  "style": {
+    "badge": { "gradientFrom": "#059669", "gradientTo": "#10b981" }
+  }
+}
