@@ -57,7 +57,7 @@
 
 ### Scene 4.2.1 — Chris Coaches Ahmed
 **Agent: Chris → Messages**
-- "Ahmed, the Letter of Support from a designated organization is the most critical document. Without it, we can't apply. Here's the strategy: 1) Continue pursuing TechStars Canada — schedule your pitch. 2) As backup, I'm connecting you with two other designated organizations: the National Angel Capital Organization (NACO) and MaRS Discovery District. 3) I'll draft your business pitch deck with immigration context."
+- "Ahmed, the Letter of Support from a designated organization is the most critical document. Without it, we can't apply. And it's become extremely competitive — designated organizations are now limited to supporting only 2 startups per year, down from 10. That means every pitch has to be airtight. Here's the strategy: 1) Continue pursuing TechStars Canada — schedule your pitch. 2) As backup, I'm connecting you with two other designated organizations: the National Angel Capital Organization (NACO) and MaRS Discovery District. 3) I'll draft your business pitch deck with immigration context."
 
 ### Scene 4.2.2 — Ahmed Pitches TechStars
 **Agent: Ahmed (narrated)**

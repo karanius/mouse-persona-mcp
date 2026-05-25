@@ -41,7 +41,7 @@
 ### Scene 2.2.4 — Work Experience
 - Hyundai Robotics, Senior Robotics Engineer, 2021-present (3 years post-military)
 - Korea Army, Technical Officer, 2019-2021 (mandatory service)
-- NOC 21311 — Mechanical engineers
+- NOC 21301 — Mechanical engineers
 - 3 patents, collaborative robot arm design
 - Thinks: "Military service counts as work experience? Not sure. Need to ask the consultant."
 
@@ -50,7 +50,7 @@
 - Location: Vancouver, BC
 - Title: Robotics Software Engineer
 - Salary: $120,000 CAD
-- NOC: 21311
+- NOC: 21301
 - Status: Conditional offer pending work authorization
 
 ## Chapter 2.3 — CRS + Eligibility

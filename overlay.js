@@ -52,16 +52,65 @@
   var _humanPause = 0;
   var _mpClickInProgress = false;
   var _sessionTapes = [];
+  var _MP_MAX_STORED_SCENES = 100;
 
-  // Auto-load persona profile + session memory from injected globals
+  function _persistSession() {
+    try {
+      var data = {
+        persona: _cfg.persona || {},
+        narrator: _cfg.narrator || {},
+        scenes: _sessionTapes.slice(-_MP_MAX_STORED_SCENES).map(function(s) {
+          return { ts: s.ts, url: s.url, dsl: s.dsl };
+        }),
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem('__mp_session__', JSON.stringify(data));
+    } catch(e) {
+      try {
+        var trimmed = {
+          persona: _cfg.persona || {},
+          narrator: _cfg.narrator || {},
+          scenes: _sessionTapes.slice(-50).map(function(s) {
+            return { ts: s.ts, url: s.url, dsl: s.dsl };
+          }),
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('__mp_session__', JSON.stringify(trimmed));
+      } catch(e2) {}
+    }
+  }
+
+  // Restore session: injected globals > localStorage > empty
+  if (typeof __MP_LAST_SESSION__ !== 'undefined' && __MP_LAST_SESSION__ && __MP_LAST_SESSION__.scenes) {
+    _sessionTapes = __MP_LAST_SESSION__.scenes.slice();
+  } else {
+    try {
+      var _stored = localStorage.getItem('__mp_session__');
+      if (_stored) {
+        var _parsed = JSON.parse(_stored);
+        if (_parsed.scenes && _parsed.scenes.length > 0) {
+          _sessionTapes = _parsed.scenes;
+        }
+      }
+    } catch(e) {}
+  }
+
+  // Restore persona: injected globals > localStorage > default
   if (typeof __MP_AGENT_PROFILE__ !== 'undefined' && __MP_AGENT_PROFILE__) {
     var _autoProfile = __MP_AGENT_PROFILE__;
     if (_autoProfile.persona && _autoProfile.persona.name) {
       _persona = _autoProfile.persona.name;
     }
-  }
-  if (typeof __MP_LAST_SESSION__ !== 'undefined' && __MP_LAST_SESSION__ && __MP_LAST_SESSION__.scenes) {
-    _sessionTapes = __MP_LAST_SESSION__.scenes.slice();
+  } else {
+    try {
+      var _storedPersona = localStorage.getItem('__mp_persona__');
+      if (_storedPersona) {
+        var _parsedPersona = JSON.parse(_storedPersona);
+        if (_parsedPersona.persona && _parsedPersona.persona.name) {
+          _persona = _parsedPersona.persona.name;
+        }
+      }
+    } catch(e) {}
   }
   var _tp = (typeof trustedTypes !== 'undefined' && trustedTypes.createPolicy)
     ? trustedTypes.createPolicy('mp-overlay', { createHTML: function(s) { return s; } })
@@ -707,7 +756,7 @@
     commentOn: function(selectorOrOpts, thought, durationMs) {
       durationMs = durationMs || CFG_THOUGHT_MS;
       var readTime = _humanPause || 0;
-      var totalTime = Math.max(durationMs, readTime);
+      var totalTime = readTime > 0 ? Math.max(durationMs, readTime) : Math.min(durationMs, 800);
       var el = _resolveTarget(selectorOrOpts);
       if (!el) return Promise.resolve({ ok: false, error: 'not found: ' + JSON.stringify(selectorOrOpts) });
       var self = this;
@@ -833,6 +882,30 @@
                 if (_f && !/^(INPUT|TEXTAREA|SELECT)$/.test(_f.tagName)) _f = _f.querySelector('input,textarea,select');
                 if (_f) fillEl = _f;
               }
+              // Radix/shadcn combobox: click to open, then click matching option
+              var isCombobox = fillEl.getAttribute('role') === 'combobox' || (fillEl.tagName === 'BUTTON' && fillEl.getAttribute('aria-expanded') !== null);
+              if (isCombobox) {
+                return _scrollForBubble(fillEl).then(function() {
+                  var fr = fillEl.getBoundingClientRect();
+                  return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
+                }).then(function() {
+                  self.highlight(fillEl);
+                  _cursorClick(_cursorX, _cursorY);
+                  fillEl.click();
+                  return new Promise(function(r) { setTimeout(r, 300); });
+                }).then(function() {
+                  var opts = document.querySelectorAll('[role="option"]');
+                  var targetVal = (s.value || '').toLowerCase();
+                  for (var oi = 0; oi < opts.length; oi++) {
+                    if ((opts[oi].textContent || '').toLowerCase().indexOf(targetVal) !== -1) {
+                      opts[oi].click();
+                      if (!stepExpired) results.push({ step: i, action: 'fill-combobox', result: { ok: true, selected: opts[oi].textContent } });
+                      return;
+                    }
+                  }
+                  if (!stepExpired) results.push({ step: i, action: 'fill-combobox', result: { ok: false, error: 'option not found: ' + s.value } });
+                });
+              }
               return _scrollForBubble(fillEl).then(function() {
                 var fr = fillEl.getBoundingClientRect();
                 return self.glideTo(fr.left + fr.width / 2, fr.top + fr.height / 2, CFG_COMMENT_GLIDE_MS);
@@ -856,7 +929,9 @@
             }
 
             if (s.think) {
-              self.think(s.think, s.duration || CFG_THOUGHT_MS);
+              var thinkDur = s.duration || CFG_THOUGHT_MS;
+              if (_humanPause === 0) thinkDur = Math.min(thinkDur, 800);
+              self.think(s.think, thinkDur);
               if (!stepExpired) results.push({ step: i, action: 'think' });
             }
 
@@ -947,9 +1022,8 @@
       var self = this;
       var shouldRecord = opts.record !== false;
       var startUrl = location.href;
-      if (opts.human === false) _humanPause = 0;
+      if (opts.human === false || opts.human === 0) _humanPause = 0;
       else if (typeof opts.human === 'number') _humanPause = opts.human;
-      else _humanPause = CFG_HUMAN_MS;
       if (opts.persona) self.setPersona(opts.persona);
       if (shouldRecord) self.startRecording();
       var lines = script.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
@@ -1010,12 +1084,14 @@
             }
           }
           _sessionTapes.push({ ts: new Date().toISOString(), url: startUrl, dsl: script, tape: result.tape || [], status: 'timeout' });
+          _persistSession();
           return result;
         }
         var result = { ok: !r.aborted, steps: r.completed, drifts: r.drifts || [] };
         if (r.aborted) result.status = 'aborted';
         if (shouldRecord) result.tape = self.stopRecording();
         _sessionTapes.push({ ts: new Date().toISOString(), url: startUrl, dsl: script, tape: result.tape || [] });
+        _persistSession();
         return result;
       });
     },
@@ -1048,6 +1124,7 @@
         var to = profile.style.badge.gradientTo || CFG_BADGE_TO;
         _label.style.background = 'linear-gradient(135deg,' + from + ',' + to + ')';
       }
+      try { localStorage.setItem('__mp_persona__', JSON.stringify(profile)); } catch(e) {}
       return this.who();
     },
 
@@ -1071,7 +1148,16 @@
     },
 
     sessionJSON: function() {
-      return JSON.stringify(this.session(), null, 2);
+      return this.session();
+    },
+
+    clearSession: function() {
+      _sessionTapes = [];
+      try {
+        localStorage.removeItem('__mp_session__');
+        localStorage.removeItem('__mp_persona__');
+      } catch(e) {}
+      return { cleared: true };
     },
 
     exportReplay: function() {
@@ -1084,7 +1170,7 @@
         '#!/usr/bin/env node',
         '// Cursor Persona Recording — ' + p,
         '// Generated: ' + new Date().toISOString(),
-        '// Replay: node this-file.js',
+        '// Flags: --headed (show browser), --no-human (skip pauses)',
         '',
         'const fs = require("fs");',
         'const path = require("path");',
@@ -1092,9 +1178,24 @@
         'try { chromium = require("playwright").chromium; }',
         'catch { console.error("npm i playwright"); process.exit(1); }',
         '',
+        'const HEADED = process.argv.includes("--headed");',
         'const HUMAN = process.argv.includes("--no-human") ? 0 : ' + CFG_HUMAN_MS + ';',
-        'const OVERLAY = path.resolve(__dirname, "..", "overlay.js");',
         'const PERSONA = ' + JSON.stringify(p) + ';',
+        '',
+        '// Walk up from __dirname to find overlay.js and persona.config.json',
+        'function findUp(name) {',
+        '  let d = __dirname;',
+        '  for (let i = 0; i < 10; i++) {',
+        '    const f = path.join(d, name);',
+        '    if (fs.existsSync(f)) return f;',
+        '    const parent = path.dirname(d);',
+        '    if (parent === d) break;',
+        '    d = parent;',
+        '  }',
+        '  throw new Error(name + " not found from " + __dirname);',
+        '}',
+        'const OVERLAY = findUp("overlay.js");',
+        'const CONFIG = findUp("persona.config.json");',
         '',
         'const SCENES = [',
         scenes.join(',\n'),
@@ -1102,25 +1203,37 @@
         '',
         '(async () => {',
         '  const browser = await chromium.launch({',
-        '    headless: false,',
+        '    headless: !HEADED,',
         '    args: ["--disable-infobars"],',
         '    ignoreDefaultArgs: ["--enable-automation", "--disable-blink-features=AutomationControlled"]',
         '  });',
-        '  const context = await browser.newContext({',
-        '    viewport: { width: 1280, height: 900 },',
-        '    storageState: { cookies: [], origins: [] }',
-        '  });',
-        '  const page = await context.newPage();',
-        '  const overlay = fs.readFileSync(OVERLAY, "utf-8").replace("__MP_PERSONA_NAME__", PERSONA);',
-        '  await page.addInitScript(overlay);',
+        '  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });',
+        '  const config = JSON.parse(fs.readFileSync(CONFIG, "utf-8"));',
+        '  const configJs = "var __MP_CONFIG__ = " + JSON.stringify(config) + ";\\n";',
+        '  const overlayScript = configJs + fs.readFileSync(OVERLAY, "utf-8").replace("__MP_PERSONA_NAME__", PERSONA);',
+        '  await page.addInitScript(overlayScript);',
         '  await page.goto(' + JSON.stringify(startUrl) + ');',
         '  await page.waitForLoadState("networkidle");',
         '  await page.evaluate(([p,h]) => { window.__mp.setPersona(p); window.__mp.setHuman(h); }, [PERSONA, HUMAN]);',
         '',
         '  for (let i = 0; i < SCENES.length; i++) {',
         '    console.log("  " + SCENES[i].name);',
-        '    await page.evaluate(([h,s]) => { window.__mp.setHuman(h); return window.__mp.x(s); }, [HUMAN, SCENES[i].dsl]);',
+        '    try {',
+        '      await page.evaluate(([h,s]) => { window.__mp.setHuman(h); return window.__mp.x(s); }, [HUMAN, SCENES[i].dsl]);',
+        '    } catch(e) {',
+        '      await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => {});',
+        '    }',
         '    await new Promise(r => setTimeout(r, 500));',
+        '  }',
+        '',
+        '  // Save session',
+        '  const sess = await page.evaluate(() => window.__mp ? window.__mp.session() : null);',
+        '  if (sess) {',
+        '    const sessDir = path.resolve(__dirname, "sessions");',
+        '    if (!fs.existsSync(sessDir)) fs.mkdirSync(sessDir, { recursive: true });',
+        '    fs.writeFileSync(path.resolve(__dirname, "last-session.json"), JSON.stringify(sess, null, 2));',
+        '    fs.writeFileSync(path.join(sessDir, new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19) + ".json"), JSON.stringify(sess, null, 2));',
+        '    console.log("  Session saved (" + sess.scenes.length + " scenes)");',
         '  }',
         '',
         '  console.log("Done.");',
@@ -1128,6 +1241,10 @@
         '  await browser.close();',
         '})();'
       ].join('\n');
+    },
+
+    exportReplayFile: function() {
+      return { __type: "replay_script", code: this.exportReplay() };
     }
   };
 
@@ -1175,12 +1292,24 @@
     if (_injected) observer.disconnect();
   }
 
-  // Auto-load persona from injected profile after overlay is ready
+  // Auto-load persona: injected profile > localStorage > none
   if (typeof __MP_AGENT_PROFILE__ !== 'undefined' && __MP_AGENT_PROFILE__) {
     setTimeout(function() {
       if (window.__mp && window.__mp.loadPersona) {
         window.__mp.loadPersona(__MP_AGENT_PROFILE__);
       }
     }, 200);
+  } else {
+    try {
+      var _lsPersona = localStorage.getItem('__mp_persona__');
+      if (_lsPersona) {
+        var _lsParsed = JSON.parse(_lsPersona);
+        setTimeout(function() {
+          if (window.__mp && window.__mp.loadPersona) {
+            window.__mp.loadPersona(_lsParsed);
+          }
+        }, 200);
+      }
+    } catch(e) {}
   }
 })();

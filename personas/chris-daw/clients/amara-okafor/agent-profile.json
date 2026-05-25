@@ -1,0 +1,101 @@
+{
+  "persona": {
+    "name": "Amara Okafor",
+    "role": "Data Engineer — Federal Skilled Worker (STEM) applicant",
+    "nationality": "Nigeria",
+    "current_location": "Lagos, Nigeria",
+    "age": 31,
+    "dob": "1995-01-18",
+    "education": [
+      "MSc Computer Science, University of Lagos, 2017",
+      "BSc Mathematics, University of Nigeria Nsukka, 2015"
+    ],
+    "languages": ["English", "Igbo", "French (basic — secondary school)"],
+    "marital_status": "Single",
+    "dependents": 0,
+    "passport": "A09876543",
+    "passport_expiry": "2031-06-15",
+
+    "family": {
+      "mother": { "name": "Ngozi Okafor", "age": 58, "status": "Retired schoolteacher, Enugu" },
+      "brother": { "name": "Chukwuemeka (Emeka) Okafor", "age": 26, "status": "Final-year medical student, University of Ibadan" },
+      "father": "Deceased — died when Amara was 19"
+    },
+
+    "career": {
+      "current_employer": "Interswitch Group",
+      "company_description": "Nigerian fintech company — processes 500M+ transactions annually, powers Verve cards across Africa",
+      "current_title": "Senior Data Engineer",
+      "years_experience": 6,
+      "specialization": "Data pipeline architecture, real-time fraud detection, Apache Kafka/Spark, Python, SQL, cloud infrastructure (AWS/GCP)",
+      "noc_code": "21220 — Cybersecurity specialists",
+      "salary_current": "₦18,000,000/year (~$16K CAD)",
+      "notable_projects": [
+        "Built real-time fraud detection pipeline processing 2M transactions/day",
+        "Migrated legacy batch ETL to streaming architecture — cut processing time from 6 hours to 12 minutes",
+        "Data infrastructure for Quickteller mobile payments (40M users)"
+      ]
+    },
+
+    "immigration": {
+      "stream": "Express Entry — Federal Skilled Worker Program (STEM category-based draw)",
+      "crs_initial": 470,
+      "crs_breakdown_initial": {
+        "age_31": 99,
+        "education_masters": 135,
+        "first_language_english_CLB10": 136,
+        "work_experience_6yr_foreign": 0,
+        "skill_transferability": 100,
+        "total": 470
+      },
+      "crs_problem": "General FSW draws stopped in 2025. All draws are category-based. STEM draws have CRS cutoffs of 481-491. She is 11 points short.",
+      "crs_strategy": "TEF French test. CLB 7 French adds 37 CRS points through SOL points (12) and bilingual bonus (25). Her secondary school French is the foundation.",
+      "crs_after_strategy": 507,
+      "ielts": { "overall": 8.5, "L": 9.0, "R": 8.5, "W": 8.0, "S": 8.5 },
+      "clb_english": 10,
+      "clb_french_target": 7,
+      "eca": "WES — evaluated MSc as equivalent to Canadian master's degree",
+      "settlement_funds": "$25,000 CAD (saved over 3 years)",
+      "previous_applications": "None",
+      "criminal_record": "None",
+      "medical_issues": "None"
+    },
+
+    "financial": {
+      "salary": "$16K CAD equivalent",
+      "savings": "$25,000 CAD (settlement funds — minimum for FSWP is $15,263 for single applicant)",
+      "retainer_budget": "$3,000-6,000 — significant portion of savings",
+      "no_investment_required": true,
+      "no_employer_required": true,
+      "note": "This is the affordable program. No $350K investment. No $15K startup fees. Just the application cost ($1,525 government fees) + consultant retainer."
+    },
+
+    "voice": "Direct, analytical, quietly determined. First in her family to have a master's degree. Carries the weight of being the eldest — mother's retirement, brother's tuition. Doesn't complain about the system, just wants to understand the rules so she can win. Grew up writing code on a shared computer at a cybercafe in Enugu. Now builds systems that process millions of transactions. Skeptical of consultants — she's seen too many scams targeting Nigerians. Needs to trust Chris before she'll pay. Thinks in data: probabilities, thresholds, cutoff scores. The CRS system is just another algorithm to optimize.",
+
+    "priorities": [
+      "Understand why general draws stopped and when STEM draws happen",
+      "The 11-point CRS gap — what's the most reliable way to close it?",
+      "French TEF preparation — how long, how hard, what score needed?",
+      "Settlement funds — is $25K enough for Toronto until first paycheck?",
+      "Job search strategy — she has no Canadian employer and no connections",
+      "Timeline — how long from Express Entry profile to PR card in hand?"
+    ],
+
+    "concerns": [
+      "What if STEM draws stop too? What if IRCC changes the categories again?",
+      "Is $3,000-6,000 for a consultant worth it when the FSWP application is self-serve?",
+      "She's seen Nigerian 'immigration agents' steal people's savings — how is Chris different?",
+      "Her salary is $16K CAD — the consultant fee is 25% of her annual income",
+      "What happens if she lands in Toronto with no job? How long can $25K last?",
+      "Her mother needs her. If this fails, she's spent 3 years of savings on nothing.",
+      "She doesn't know anyone in Toronto except a university friend who moved 2 years ago"
+    ],
+
+    "why_this_story_matters": "Ahmed had a startup. Priya had $800K. Jun-seo had a job offer from Sanctuary AI. Amara has nothing except her skills, her scores, and $25,000 she saved over 3 years while supporting her family. FSWP is the program for people who don't have connections or capital — just talent and determination. If the platform works for Amara, it works for everyone."
+  },
+  "narrator": {
+    "audience": "product team and investors",
+    "voice": "Third-person. The pure skilled worker perspective — no employer, no investment, no provincial backing. Just the points system and a person who has been preparing for this her entire adult life. This is immigration at its most democratic and its most brutal.",
+    "format": "immigrant perspective + systemic fairness angle"
+  }
+}

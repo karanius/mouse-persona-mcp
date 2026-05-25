@@ -35,8 +35,9 @@
 - Platform notes: "No ECA needed for entrepreneur stream — education is assessed differently"
 
 ### Scene 2.2.3 — Language
-- IELTS: 6.5 overall (L:7, R:6.5, W:6, S:7)
-- CLB 7 — meets minimum for BC Entrepreneur
+- IELTS General: L:7, R:6.5, W:6, S:7
+- Platform converts per-skill to CLB (IRCC rules): L→CLB 7, R→CLB 7, W→CLB 7, S→CLB 7
+- Overall CLB 7 (limited by lowest skill) — well above CLB 4 minimum for BC Entrepreneur
 - Thinks: "Not my strongest area. But entrepreneur stream doesn't weight language as heavily as Express Entry."
 
 ### Scene 2.2.4 — Business Experience
@@ -71,7 +72,7 @@
   - Business experience: ✅ 15 years > 3 years minimum
   - Investment: ✅ $350K > $200K minimum
   - Job creation: ✅ 8 jobs > 1 minimum
-  - Missing: Exploratory visit not completed
+  - Missing: Exploratory visit not completed (strongly recommended)
   - Missing: Business proposal not submitted to BC PNP
 - **Note:** "This is a 2-stage process. Stage 1: BC PNP registration + business proposal approval + work permit. Stage 2: Arrive, operate business, meet performance agreement, receive nomination."
 - Thinks: "Two stages. I didn't know that. I need a consultant who can guide me through both."

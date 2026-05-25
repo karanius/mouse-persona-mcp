@@ -28,13 +28,13 @@ Priya opens her laptop that evening.
 ### Scene 0.2.1 — Can'ArI Chat
 - Clicks "Ask Can'ArI"
 - Types: "I own a textile manufacturing company in India with 85 employees. I want to open a garment factory in Surrey, BC. My son is already studying at UBC. What immigration program fits me?"
-- Can'ArI responds: BC Provincial Entrepreneur stream — requires $600K net worth, 3+ years business experience, business proposal, exploratory visit, performance agreement
+- Can'ArI responds: BC Provincial Entrepreneur stream — requires $600K net worth, 3+ years business experience, business proposal, performance agreement. Exploratory visit strongly recommended.
 - Thinks: "It knows the specific requirements. Net worth $600K — I have $800K. And it mentioned the exploratory visit. This is detailed."
 
 ### Scene 0.2.2 — Eligibility Assessment
 - Enters: entrepreneur, textile/manufacturing, 15 years experience, $800K net worth, $350K investment planned, 8 jobs
 - System shows: BC Provincial Entrepreneur — Strong Candidate
-- Also flags: "Exploratory visit to BC required before application"
+- Also flags: "Exploratory visit to BC strongly recommended before application"
 - Thinks: "Strong candidate. But I need someone who's done this before. This is $350,000 of my family's money."
 
 ## Chapter 0.3 — Finding Chris

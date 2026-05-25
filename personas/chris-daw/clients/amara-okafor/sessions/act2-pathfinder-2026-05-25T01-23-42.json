@@ -1,0 +1,339 @@
+{
+  "persona": {
+    "name": "Amara Okafor",
+    "role": "Senior Data Engineer, Interswitch — FSWP applicant",
+    "voice": "Direct, analytical, quietly determined. Thinks in data: probabilities, thresholds, cutoff scores.",
+    "priorities": [
+      "Close the 11-point CRS gap",
+      "Find a verified RCIC consultant",
+      "The French strategy — CLB 7 for bilingual bonus"
+    ]
+  },
+  "narrator": {
+    "audience": "investors and product team",
+    "voice": "Third-person. The pure skilled worker — no employer, no investment, no provincial backing.",
+    "format": "immigrant perspective + systemic fairness angle"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-25T01:20:23.869Z",
+      "url": "http://localhost:3000/",
+      "dsl": "\n  > Amara Okafor. Senior Data Engineer at Interswitch, Lagos. CRS 470. Eleven points short of the lowest STEM draw. She lands on CanaDREAMERS for the first time.\n  @ Stop guessing. Start belonging.\n  \"5 Bold claim. Let me see if they verify their consultants. I've seen too many fake agents in Lagos.\n  @ Immigration Consultants\n  \"3 Verified RCIC professionals. That's the filter.\n  @ Find a Consultant\n  \"3 Let me see who does FSWP.\n  ! Find a Consultant\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara Okafor. Senior Data Engineer at Interswitch, Lagos. CRS 470. Eleven points short of the lowest STEM draw. She lands on CanaDREAMERS for the first time."
+              },
+              {
+                "match": "Stop guessing. Start belonging.",
+                "thought": "Bold claim. Let me see if they verify their consultants. I've seen too many fake agents in Lagos.",
+                "duration": 5000
+              },
+              {
+                "match": "Immigration Consultants",
+                "thought": "Verified RCIC professionals. That's the filter.",
+                "duration": 3000
+              },
+              {
+                "match": "Find a Consultant",
+                "thought": "Let me see who does FSWP.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Find a Consultant"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:20:33.309Z",
+      "url": "http://localhost:3000/services/consultants",
+      "dsl": "\n  > Two verified consultants from the database. Chris Daw — CICC verified, FSWP specialist, $250/hr, Vancouver.\n  @ Chris Daw\n  \"3 Chris Daw. CICC Verified. Federal Skilled Worker. $250 consultation.\n  @ Federal Skilled Worker\n  \"5 He does FSWP. The platform checked the CICC register. He can't disappear with my money.\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Two verified consultants from the database. Chris Daw — CICC verified, FSWP specialist, $250/hr, Vancouver."
+              },
+              {
+                "match": "Chris Daw",
+                "thought": "Chris Daw. CICC Verified. Federal Skilled Worker. $250 consultation.",
+                "duration": 3000
+              },
+              {
+                "match": "Federal Skilled Worker",
+                "thought": "He does FSWP. The platform checked the CICC register. He can't disappear with my money.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:20:42.389Z",
+      "url": "http://localhost:3000/services/consultants",
+      "dsl": "\n  > Amara needs an account. She clicks Sign In.\n  @ Sign In\n  \"3 I need to sign up first.\n  ! Sign In\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara needs an account. She clicks Sign In."
+              },
+              {
+                "match": "Sign In",
+                "thought": "I need to sign up first.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Sign In"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:20:52.591Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  > Two portals. Amara picks the immigrant side.\n  @ User Dashboard\n  \"3 Track eligibility, CRS score, connect with consultants. My door.\n  ! User Dashboard\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Two portals. Amara picks the immigrant side."
+              },
+              {
+                "match": "User Dashboard",
+                "thought": "Track eligibility, CRS score, connect with consultants. My door.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "User Dashboard"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:21:00.548Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  > Amara clicks Sign up and fills her details.\n  @ Sign up\n  ! Sign up\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara clicks Sign up and fills her details."
+              },
+              {
+                "match": "Sign up"
+              },
+              {
+                "click": {
+                  "match": "Sign up"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:21:13.976Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  > Start Your Journey. Three fields. The professional identity she's about to leave behind.\n  = Full Name | Amara Okafor\n  = Email | amara.okafor@interswitch.com\n  = Password | AmaraCanada2026!\n  \"3 Amara Okafor. My Interswitch email. The company I'm about to leave.\n  @ Create Account\n  ! Create Account\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Start Your Journey. Three fields. The professional identity she's about to leave behind."
+              },
+              {
+                "fill": {
+                  "match": "Full Name"
+                },
+                "value": "Amara Okafor"
+              },
+              {
+                "fill": {
+                  "match": "Email"
+                },
+                "value": "amara.okafor@interswitch.com"
+              },
+              {
+                "fill": {
+                  "match": "Password"
+                },
+                "value": "AmaraCanada2026!"
+              },
+              {
+                "match": null,
+                "thought": "Amara Okafor. My Interswitch email. The company I'm about to leave.",
+                "duration": 3000
+              },
+              {
+                "match": "Create Account"
+              },
+              {
+                "click": {
+                  "match": "Create Account"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:21:27.020Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > The Pathfinder. Three questions. Not a 5-step form — a decision tree. The platform asks: where are you right now?\n  @ Welcome to CanaDREAMERS\n  \"3 Let's understand your situation. Two choices. Simple.\n  @ Outside Canada\n  \"3 I'm in Lagos. I'm not in Canada. Not yet.\n  ! Outside Canada\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "The Pathfinder. Three questions. Not a 5-step form — a decision tree. The platform asks: where are you right now?"
+              },
+              {
+                "match": "Welcome to CanaDREAMERS",
+                "thought": "Let's understand your situation. Two choices. Simple.",
+                "duration": 3000
+              },
+              {
+                "match": "Outside Canada",
+                "thought": "I'm in Lagos. I'm not in Canada. Not yet.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Outside Canada"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:21:36.384Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Q2: What brings you to CanaDREAMERS? Five paths. Amara wants to work and live in Canada.\n  @ I want to work and live in Canada\n  \"3 Work and live. Not study, not visit, not join family. I want to work.\n  ! I want to work and live in Canada\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Q2: What brings you to CanaDREAMERS? Five paths. Amara wants to work and live in Canada."
+              },
+              {
+                "match": "I want to work and live in Canada",
+                "thought": "Work and live. Not study, not visit, not join family. I want to work.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "I want to work and live in Canada"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:21:47.549Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Q3: Do you have a job offer from a Canadian employer? Two choices. This is the fork — job offer or Express Entry.\n  @ No, not yet\n  \"5 No job offer. No employer backing me. I want to apply through Express Entry. I have my skills, my IELTS, my Master's. The FSWP path. The honest path.\n  ! No, not yet\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Q3: Do you have a job offer from a Canadian employer? Two choices. This is the fork — job offer or Express Entry."
+              },
+              {
+                "match": "No, not yet",
+                "thought": "No job offer. No employer backing me. I want to apply through Express Entry. I have my skills, my IELTS, my Master's. The FSWP path. The honest path.",
+                "duration": 5000
+              },
+              {
+                "click": {
+                  "match": "No, not yet"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:22:18.572Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Three clicks. Outside Canada, work and live, no job offer. Archetype: Skilled Worker Applicant. The platform knows who Amara is.\n  @ Your journey is set\n  \"3 Skilled Worker Applicant. Immigrate through Express Entry. That's me. Three clicks, not five forms.\n  @ Skilled Worker Applicant\n  \"3 The platform configured my profile for Express Entry pathways. Can'ArI will tailor guidance. Tools will match my goals.\n  @ Find a Consultant\n  \"5 Find a Consultant. Chris Daw is on the other side of this button. FSWP specialist. CICC verified. The consultant I found before I even signed up.\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Three clicks. Outside Canada, work and live, no job offer. Archetype: Skilled Worker Applicant. The platform knows who Amara is."
+              },
+              {
+                "match": "Your journey is set",
+                "thought": "Skilled Worker Applicant. Immigrate through Express Entry. That's me. Three clicks, not five forms.",
+                "duration": 3000
+              },
+              {
+                "match": "Skilled Worker Applicant",
+                "thought": "The platform configured my profile for Express Entry pathways. Can'ArI will tailor guidance. Tools will match my goals.",
+                "duration": 3000
+              },
+              {
+                "match": "Find a Consultant",
+                "thought": "Find a Consultant. Chris Daw is on the other side of this button. FSWP specialist. CICC verified. The consultant I found before I even signed up.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-25T01:20:23.869Z"
+}

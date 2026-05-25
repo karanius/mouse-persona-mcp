@@ -22,11 +22,11 @@
 - Reads profile: 15 years, 85 employees, $800K, existing Canadian retail relationships
 - Thinks: "This is a strong BC Entrepreneur candidate. Existing export relationships with Canadian retailers — that's unusual and powerful. Most applicants are starting from scratch. She's expanding."
 - Responds:
-  "Priya, thank you for reaching out. Your profile is exceptional for the BC Entrepreneur stream — the existing business relationships with Canadian retailers give you a significant advantage in the business proposal. A few questions: 1) Have you visited BC before for business? The exploratory visit is mandatory. 2) Is your husband Vikram planning to relocate as well, or manage India operations? 3) Your daughter Diya — is she finishing school in India or would she join you? My retainer for BC Entrepreneur cases is $12,000. Initial consultation is complimentary. I'm available Tuesday or Thursday this week."
+  "Priya, thank you for reaching out. Your profile is exceptional for the BC Entrepreneur stream — the existing business relationships with Canadian retailers give you a significant advantage in the business proposal. A few questions: 1) Have you visited BC before for business? The exploratory visit isn't technically mandatory, but I strongly recommend it — walking the location, meeting suppliers, understanding the market firsthand makes your business proposal far more credible to BC PNP. 2) Is your husband Vikram planning to relocate as well, or manage India operations? 3) Your daughter Diya — is she finishing school in India or would she join you? My retainer for BC Entrepreneur cases is $12,000. Initial consultation is complimentary. I'm available Tuesday or Thursday this week."
 
 ### Scene 3.1.3 — Priya Replies
 **Agent: Priya**
-- "Chris, thank you for the quick response. To answer: 1) I've never visited BC — only Toronto once for a trade show. I know the exploratory visit is required and I'm planning to come in the next 2 months. My son Arjun can show me around Surrey. 2) Vikram will stay in Mumbai initially to manage our factories. He'll join once the Canadian operation is stable — perhaps year 2. 3) Diya would come with me. She's in Grade 12 — she'd need to finish her last year in BC. Is that possible on a work permit? I'm comfortable with the $12,000 retainer. Thursday at 3 PM IST works for me."
+- "Chris, thank you for the quick response. To answer: 1) I've never visited BC — only Toronto once for a trade show. I agree the exploratory visit makes sense and I'm planning to come in the next 2 months. My son Arjun can show me around Surrey. 2) Vikram will stay in Mumbai initially to manage our factories. He'll join once the Canadian operation is stable — perhaps year 2. 3) Diya would come with me. She's in Grade 12 — she'd need to finish her last year in BC. Is that possible on a work permit? I'm comfortable with the $12,000 retainer. Thursday at 3 PM IST works for me."
 
 ## Chapter 3.2 — Consultation
 
@@ -35,13 +35,13 @@
 - 45-minute consultation (longer than Ahmed's — more complex program)
 - Chris explains the 2-stage process:
   - **Stage 1:** Register with BC PNP → submit business proposal → if approved, get work permit → arrive in BC
-  - **Stage 2:** Operate business for 12-20 months → meet performance targets (investment, jobs, revenue) → BC nominates for PR → apply for federal PR
+  - **Stage 2:** Operate business for 18-20 months → meet performance targets (investment, jobs, revenue) → BC nominates for PR → apply for federal PR
 - Key points discussed:
   - Exploratory visit: 1 week, meet realtors, visit industrial spaces in Surrey, meet a local accountant
   - Business proposal: Chris will draft with her — needs market analysis, financial projections, job creation plan
   - Net worth verification: third-party CPA audit of all assets
   - Diya can attend school on a study permit tied to Priya's work permit
-  - Timeline: 6-8 months for Stage 1, 12-20 months for Stage 2, then 6-12 months for PR = ~3 years total
+  - Timeline: 6-8 months for Stage 1, 18-20 months for Stage 2, then 6-12 months for PR = ~3 years total
   - Risk: if performance targets not met, nomination can be denied
 - Priya asks: "What happens if the business doesn't meet targets?"
 - Chris: "Then we don't get the nomination. Your work permit expires and you'd need to leave. That's why the business proposal must be realistic — we plan for what you CAN achieve, not what looks impressive on paper."

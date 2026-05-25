@@ -11,7 +11,7 @@
 ### Scene 5.1.1 — Bridging Work Permit
 **Agent: Chris**
 - While PR processes, Chris applies for a work permit based on the BC PNP nomination
-- LMIA-exempt (C11 — PNP nominee)
+- LMIA-exempt (T13 — provincial nominee)
 - Processing: 4-6 weeks
 - Jun-seo can enter Canada and start working at Sanctuary AI before PR is finalized
 
@@ -58,8 +58,8 @@
 **Agent: Chris**
 - IRCC email: Jun-seo Park — Permanent Residence APPROVED
 - COPR letter issued
-- Since Jun-seo is already IN Canada on a work permit, he does a "flagpole" — drives to the US border and re-enters as a PR
-- Chris messages: "Jun-seo — PR APPROVED. You're now a permanent resident of Canada. 8 months from first contact to PR. One of the fastest I've seen."
+- Since Jun-seo is already IN Canada on a work permit, he completes his PR landing through the IRCC PR Confirmation Portal — no need to leave the country. Chris submits the online landing request, and within days Jun-seo's status updates to permanent resident.
+- Chris messages: "Jun-seo — PR APPROVED. Landing confirmed through the portal. You're now a permanent resident of Canada. 8 months from first contact to PR — best case, and you hit it. One of the fastest I've seen."
 
 ### Scene 5.4.2 — Jun-seo Reacts
 **Agent: Jun-seo**
@@ -79,7 +79,7 @@
 - 3 completed cases:
   - Ahmed Al-Rashid: Start-Up Visa → PR ✅ (14 months, $6,750 earned)
   - Priya Mehta: BC Entrepreneur → PR ✅ (30 months, $9,500 earned)
-  - Jun-seo Park: BC PNP Tech → PR ✅ (8 months, $3,750 earned)
+  - Jun-seo Park: BC PNP Tech → PR ✅ (8 months best case — 10-14 months typical, $3,750 earned)
 - Total earned: $20,000
 - Success rate: 3/3 — 100%
 - Programs covered: SUV, Entrepreneur, PNP
@@ -94,7 +94,7 @@
 | Jun-seo | Permanent resident. Working at Sanctuary AI. Building robots. |
 | Chris | 3 completed cases. $20,000 earned. 3 programs. 100% success rate. |
 | Sanctuary AI | Retained a world-class robotics engineer through PNP Tech |
-| Timeline | 8 months — fastest of the 3 programs |
+| Timeline | 8 months (best case — 10-14 months typical) — fastest of the 3 programs |
 | Platform | 3 end-to-end journeys: SUV (14mo), Entrepreneur (30mo), PNP (8mo) |
 
 ---
@@ -103,3 +103,11 @@
 
 *"I didn't come to Canada for the weather. I came to build something that couldn't exist anywhere else."*
 — Jun-seo Park, Robotics Software Engineer, Sanctuary AI, Vancouver
+
+---
+
+## Production Note — Program Status
+
+As of April 2026, British Columbia permanently eliminated dedicated BC PNP Tech draws and priority technology processing. The province restructured BC PNP into three pillars: Care (healthcare/childcare), Build (construction trades), and Innovate (select high-impact roles). Tech occupations remain eligible under general Skills Immigration pools but no longer receive dedicated priority draws or accelerated processing. The last dedicated BC PNP Tech draw occurred on December 3, 2024.
+
+If this movie is produced, the timeline should be set pre-2025 (when BC PNP Tech was active) or adapted to use the new Innovate pillar pathway.

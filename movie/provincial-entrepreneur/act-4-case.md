@@ -10,7 +10,7 @@
 
 ### Scene 4.1.1 — Planning the Trip
 **Agent: Chris → Messages**
-- "Priya, the exploratory visit is mandatory for BC Entrepreneur. I recommend 7-10 days in the Lower Mainland. Here's what we need to accomplish: 1) Visit 3-4 industrial spaces in Surrey for the garment facility. 2) Meet a local commercial realtor. 3) Meet a BC-based CPA for your net worth verification. 4) Visit the Surrey Board of Trade. 5) Document everything — photos, meeting notes, business cards. BC PNP will ask for a trip report."
+- "Priya, the exploratory visit isn't technically mandatory for the Base stream, but it's strongly recommended — and in my experience, applicants who skip it submit weaker proposals. I recommend 7-10 days in the Lower Mainland. Here's what we need to accomplish: 1) Visit 3-4 industrial spaces in Surrey for the garment facility. 2) Meet a local commercial realtor. 3) Meet a BC-based CPA for your net worth verification. 4) Visit the Surrey Board of Trade. 5) Document everything — photos, meeting notes, business cards. BC PNP will ask for a trip report."
 
 ### Scene 4.1.2 — Priya Visits BC
 **Agent: Priya (narrated)**
@@ -84,7 +84,7 @@
   - Net worth verification report
   - Business proposal
   - Exploratory visit report
-  - Language test results (IELTS 6.5)
+  - Language test results (IELTS General — CLB 7)
   - Education credentials
   - Business ownership proof (15 years)
 - Submits to BC PNP online portal
@@ -102,7 +102,7 @@
 **Agent: Chris**
 - BC PNP issues Invitation to Apply — business proposal approved
 - Performance agreement terms: invest $350K, create 8 jobs, active management for 20 months
-- Chris messages Priya: "Your proposal is approved. BC PNP has invited you to apply. Now we apply for a work permit to get you to Canada."
+- Chris messages Priya: "Your proposal is approved. BC PNP has invited you to apply. There's also a $3,500 non-refundable processing fee to BC PNP when we submit the full application. Now we apply for a work permit to get you to Canada."
 - Logs 3 hours → retainer balance: $6,750
 
 ## Chapter 4.5 — Work Permit

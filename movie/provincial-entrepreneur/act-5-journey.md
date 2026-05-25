@@ -119,7 +119,7 @@
 - Status: ✅ Permanent Resident
 - Business: Mehta Garments Canada Inc — 8 employees, $310K revenue
 - Documents: All verified, performance met
-- Timeline: Complete — 30 months from first contact to PR
+- Timeline: Complete — 30 months from first contact to PR (best-case scenario; 36-42 months is more typical)
 - Thinks: "From a phone call from Arjun to permanent residence. The factory is running. Diya is in school. Vikram is here. We're home."
 
 ### Scene 5.5.4 — Chris's Dashboard — Final State

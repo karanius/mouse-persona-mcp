@@ -48,7 +48,7 @@
 - Chris assesses:
   - TechStars interest is promising but not guaranteed → need backup designated orgs
   - NovaTech's AgTech angle is strong for Canadian government priorities
-  - Ahmed's funds are sufficient ($200K > $100K minimum)
+  - Ahmed's funds are sufficient ($200K well above the $75K angel investor group minimum or $200K VC fund minimum)
   - Syrian passport may add processing time but is not a barrier
   - Family included — wife and child on the same application
   - Timeline: 3-4 months for application prep, 12-16 months for processing

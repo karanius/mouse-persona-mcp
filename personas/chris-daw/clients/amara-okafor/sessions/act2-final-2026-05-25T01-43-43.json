@@ -1,0 +1,316 @@
+{
+  "persona": {
+    "name": "Amara Okafor",
+    "role": "Senior Data Engineer, Interswitch — FSWP applicant",
+    "voice": "Direct, analytical, quietly determined.",
+    "priorities": [
+      "Close the 11-point CRS gap",
+      "Find a verified RCIC",
+      "French CLB 7 strategy"
+    ]
+  },
+  "narrator": {
+    "audience": "investors and product team",
+    "voice": "Third-person. The pure skilled worker.",
+    "format": "immigrant perspective"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-25T01:41:01.524Z",
+      "url": "http://localhost:3000/",
+      "dsl": "\n  > Amara Okafor lands on CanaDREAMERS. Lagos, 11 PM. CRS 470, eleven points short.\n  @ Stop guessing. Start belonging.\n  \"5 Let me see if they verify their consultants. I've seen too many fake agents in Lagos.\n  @ Find a Consultant\n  \"3 Let me find who does FSWP.\n  ! Find a Consultant\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara Okafor lands on CanaDREAMERS. Lagos, 11 PM. CRS 470, eleven points short."
+              },
+              {
+                "match": "Stop guessing. Start belonging.",
+                "thought": "Let me see if they verify their consultants. I've seen too many fake agents in Lagos.",
+                "duration": 5000
+              },
+              {
+                "match": "Find a Consultant",
+                "thought": "Let me find who does FSWP.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Find a Consultant"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:41:14.305Z",
+      "url": "http://localhost:3000/services/consultants",
+      "dsl": "\n  > Chris Daw. CICC verified, Federal Skilled Worker specialist, $250. From the database, not a mock.\n  @ Chris Daw\n  \"5 CICC Verified. FSWP. $250 consultation. He can't disappear with my money.\n  @ Sign In\n  ! Sign In\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Chris Daw. CICC verified, Federal Skilled Worker specialist, $250. From the database, not a mock."
+              },
+              {
+                "match": "Chris Daw",
+                "thought": "CICC Verified. FSWP. $250 consultation. He can't disappear with my money.",
+                "duration": 5000
+              },
+              {
+                "match": "Sign In"
+              },
+              {
+                "click": {
+                  "match": "Sign In"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:41:23.655Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  > Two portals. Amara picks User Dashboard.\n  ! User Dashboard\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Two portals. Amara picks User Dashboard."
+              },
+              {
+                "click": {
+                  "match": "User Dashboard"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:41:32.748Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  @ Sign up\n  ! Sign up\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "match": "Sign up"
+              },
+              {
+                "click": {
+                  "match": "Sign up"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:41:45.292Z",
+      "url": "http://localhost:3000/auth",
+      "dsl": "\n  > Amara signs up. Three fields. The identity she's about to leave behind.\n  = Full Name | Amara Okafor\n  = Email | amara.okafor@interswitch.com\n  = Password | AmaraCanada2026!\n  \"3 My Interswitch email. The company I'm about to leave.\n  ! Create Account\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara signs up. Three fields. The identity she's about to leave behind."
+              },
+              {
+                "fill": {
+                  "match": "Full Name"
+                },
+                "value": "Amara Okafor"
+              },
+              {
+                "fill": {
+                  "match": "Email"
+                },
+                "value": "amara.okafor@interswitch.com"
+              },
+              {
+                "fill": {
+                  "match": "Password"
+                },
+                "value": "AmaraCanada2026!"
+              },
+              {
+                "match": null,
+                "thought": "My Interswitch email. The company I'm about to leave.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Create Account"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:41:56.116Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > The Pathfinder. Three questions. Where are you?\n  @ Outside Canada\n  \"3 Lagos. Not in Canada. Not yet.\n  ! Outside Canada\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "The Pathfinder. Three questions. Where are you?"
+              },
+              {
+                "match": "Outside Canada",
+                "thought": "Lagos. Not in Canada. Not yet.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Outside Canada"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:42:08.232Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > What brings you? Five paths.\n  @ I want to work and live in Canada\n  \"3 Work and live. The honest path.\n  ! I want to work and live in Canada\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "What brings you? Five paths."
+              },
+              {
+                "match": "I want to work and live in Canada",
+                "thought": "Work and live. The honest path.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "I want to work and live in Canada"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:42:17.804Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Do you have a job offer? The fork.\n  @ No, not yet\n  \"5 No job offer. No employer. Express Entry. FSWP. Just me and the points system.\n  ! No, not yet\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Do you have a job offer? The fork."
+              },
+              {
+                "match": "No, not yet",
+                "thought": "No job offer. No employer. Express Entry. FSWP. Just me and the points system.",
+                "duration": 5000
+              },
+              {
+                "click": {
+                  "match": "No, not yet"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:42:31.004Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Three clicks. Skilled Worker Applicant. The platform knows who Amara is.\n  @ Your journey is set\n  \"3 Skilled Worker Applicant. Three clicks, not five forms. The platform gets it.\n  @ Continue to Dashboard\n  \"3 Let me see what's on the other side.\n  ! Continue to Dashboard\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Three clicks. Skilled Worker Applicant. The platform knows who Amara is."
+              },
+              {
+                "match": "Your journey is set",
+                "thought": "Skilled Worker Applicant. Three clicks, not five forms. The platform gets it.",
+                "duration": 3000
+              },
+              {
+                "match": "Continue to Dashboard",
+                "thought": "Let me see what's on the other side.",
+                "duration": 3000
+              },
+              {
+                "click": {
+                  "match": "Continue to Dashboard"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:42:56.812Z",
+      "url": "http://localhost:3000/dashboard",
+      "dsl": "\n  > Amara lands on her dashboard. Skilled Worker Applicant. The Pathfinder resolved her archetype in three clicks. The journey begins here.\n  \"5 I'm in. The platform knows I'm a skilled worker outside Canada with no job offer. Express Entry. FSWP. Now I need to build my profile, get my CRS score, and find Chris Daw.\n",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara lands on her dashboard. Skilled Worker Applicant. The Pathfinder resolved her archetype in three clicks. The journey begins here."
+              },
+              {
+                "match": null,
+                "thought": "I'm in. The platform knows I'm a skilled worker outside Canada with no job offer. Express Entry. FSWP. Now I need to build my profile, get my CRS score, and find Chris Daw.",
+                "duration": 5000
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-25T01:41:01.524Z"
+}

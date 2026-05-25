@@ -52,8 +52,15 @@ Jun-seo Park — Korean robotics engineer, Hyundai → Sanctuary AI, Seoul → V
 - [Act 4 — The Case](pnp/act-4-case.md) — BC PNP nomination (6 weeks), ITA automatic at CRS 1030
 - [Act 5 — The Journey](pnp/act-5-journey.md) — Work permit → Sanctuary AI → PR in 8 months
 
-### Federal Skilled Worker (FSWP)
-*Coming next*
+### [Federal Skilled Worker — FSWP (STEM)](fswp/)
+Amara Okafor — Nigerian data engineer, Interswitch fintech, Lagos → Toronto
+
+- [Act 0 — Discovery](fswp/act-0-discovery.md) — Amara finds the 5-point CRS gap
+- [Act 1 — The Consultant](fswp/act-1-consultant.md) — Chris already approved (shared)
+- [Act 2 — The Immigrant](fswp/act-2-immigrant.md) — Amara signs up, CRS 476, STEM cutoff 481
+- [Act 3 — The Match](fswp/act-3-match.md) — The trust test, $3K retainer, the French strategy
+- [Act 4 — The Case](fswp/act-4-case.md) — TEF prep, CRS 506, the Wednesday wait, STEM draw #318
+- [Act 5 — The Journey](fswp/act-5-journey.md) — COPR, the kitchen table, Pearson in February, Wealthsimple $135K
 
 ## Production Notes
 

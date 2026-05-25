@@ -15,7 +15,7 @@
 - Records application number in the case
 - Case status: Active → Submitted
 - Application number: SUV-2026-XXXXXX
-- Messages Ahmed: "Your Start-Up Visa application has been submitted to IRCC. Application number: SUV-2026-XXXXXX. Processing time estimate: 12-16 months. You'll receive an Acknowledgment of Receipt (AOR) within 2-4 weeks."
+- Messages Ahmed: "Your Start-Up Visa application has been submitted to IRCC. Application number: SUV-2026-XXXXXX. Processing time estimate: 12-16 months. You'll receive an Acknowledgment of Receipt (AOR) within 2-4 weeks. Government fees paid with submission — $1,895 principal applicant processing, $575 RPRF each for you and your wife, $260 dependent child processing, $170 family biometrics. Total government fees: approximately $3,475. This is separate from my retainer."
 - Logs 5 hours for final prep → retainer balance: $10,500
 
 ### Scene 5.1.2 — Ahmed Sees the Update
@@ -148,3 +148,13 @@
 ## The End
 
 *"Stop guessing. Start belonging."*
+
+---
+
+## Production Note — Program Status
+
+As of January 2026, the Start-Up Visa Program is paused. IRCC stopped accepting new commitment certificates after December 31, 2025, and new applications after December 19, 2025. Only applicants with a valid 2025 commitment certificate may apply by June 30, 2026.
+
+Processing times have expanded dramatically — IRCC's official estimate exceeds 37 months, with a backlog of 43,200 pending applications. The 14-month timeline in this screenplay reflects an idealized best-case from the program's earlier years, not current reality.
+
+If this movie is produced, the timeline should either be set pre-2024 (when shorter processing was plausible) or acknowledge the multi-year wait as part of the story's tension.

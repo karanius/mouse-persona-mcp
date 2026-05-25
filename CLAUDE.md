@@ -114,8 +114,33 @@ Every `x()` call is automatically accumulated in a session tape. At the end of a
 1. browser_navigate(url)
 2. browser_evaluate(() => __mp.loadPersona({...}))  // once per session
 3. browser_evaluate(() => __mp.x('...DSL...'))       // repeat for each scene
-4. browser_evaluate(() => __mp.exportReplay())       // grab replay script
-5. Write returned string to recordings/*.js          // one Bash call
+4. browser_evaluate(() => __mp.session())            // save session (use filename param)
+5. browser_evaluate(() => __mp.exportReplayFile())   // save replay (use filename param)
 ```
 
 Step 4-5 MUST happen at the end of every journey. The overlay accumulates all scenes automatically — the LLM just exports and saves once.
+
+## MCP Double-Encoding Prevention
+
+**CRITICAL**: The Playwright MCP `filename` parameter JSON-encodes the return value before writing to disk. If your function returns a **string**, the file gets double-encoded (`"\"hello\""`). If it returns an **object**, the file is correct (`{"key":"value"}`).
+
+**Rules for MCP `filename` saves:**
+- `() => __mp.session()` → returns object → **correct** ✅
+- `() => __mp.sessionJSON()` → returns object → **correct** ✅ (aliased to session())
+- `() => __mp.exportReplayFile()` → returns `{__type, code}` object → **correct** ✅ (extract `.code` field with Bash after)
+- `() => JSON.stringify(__mp.session())` → returns string → **DOUBLE-ENCODED** ❌ never do this
+- `() => __mp.exportReplay()` → returns string → **DOUBLE-ENCODED** ❌ use exportReplayFile() instead
+
+**After saving a replay file**, extract the code field:
+```bash
+node -e "const f=require('fs'); const d=JSON.parse(f.readFileSync('file.json','utf-8')); f.writeFileSync('file.js', d.code);"
+```
+
+## Session Auto-Persist (localStorage)
+
+Sessions and personas auto-persist to `localStorage` after every `x()` call and `loadPersona()`. This means:
+- Persona badge survives page navigation (no need to re-call `loadPersona()`)
+- Recorded scenes accumulate across page changes
+- `clearSession()` wipes both memory and localStorage for a fresh start
+- Max 100 scenes stored in localStorage (tapes stripped to save space)
+- Full tapes kept in memory for `exportReplay()` / `session()`

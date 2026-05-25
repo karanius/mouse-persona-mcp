@@ -19,7 +19,7 @@
   5. Employment reference letter (Hyundai)
   6. Military service certificate
   7. Job offer letter from Sanctuary AI
-  8. Sanctuary AI BC PNP employer registration number
+  8. Sanctuary AI employer documentation (job offer on letterhead, WorkSafeBC number, business licence)
   9. Police clearance (Korea)
   10. Photos (IRCC spec)
 
@@ -27,7 +27,7 @@
 **Agent: Jun-seo** (over 1 week — he's fast)
 - Day 1: Passport, IELTS, degree/transcripts, military certificate — all digital, already had them
 - Day 2: Requests employment reference from Hyundai HR
-- Day 3: Sanctuary AI sends job offer letter + employer registration number
+- Day 3: Sanctuary AI sends job offer letter on company letterhead + WorkSafeBC info + business details
 - Day 5: Korea police clearance (fast — online system)
 - Day 7: Photos taken at local studio
 - Only waiting: ECA from WES (4-6 weeks — but Chris files BC PNP first, ECA needed later for Express Entry)
@@ -36,7 +36,7 @@
 ### Scene 4.1.3 — Chris Reviews
 **Agent: Chris**
 - 9 of 10 documents received (ECA pending but not needed for PNP)
-- Reviews Hyundai reference letter — confirms NOC 21311 duties
+- Reviews Hyundai reference letter — confirms NOC 21301 duties
 - Military service certificate — verifies 18 months, Technical Officer
 - Sanctuary offer letter — $120K, full-time, Vancouver
 - Logs 3 hours → retainer balance: $4,250
@@ -47,7 +47,7 @@
 **Agent: Chris**
 - Prepares BC PNP Tech nomination application:
   - Jun-seo's profile (education, experience, language)
-  - Sanctuary AI employer information + registration
+  - Sanctuary AI employer documentation (letterhead offer, WorkSafeBC, business details)
   - Job offer details (NOC, salary, duties)
   - Supporting documents
 - Submits to BC PNP online portal

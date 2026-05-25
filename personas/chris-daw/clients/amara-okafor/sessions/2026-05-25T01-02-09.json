@@ -1,0 +1,146 @@
+{
+  "persona": {
+    "name": "Amara Okafor",
+    "role": "Senior Data Engineer, Interswitch Group — FSWP applicant",
+    "voice": "Direct, analytical, quietly determined. First in her family to have a master's degree. Thinks in data: probabilities, thresholds, cutoff scores.",
+    "priorities": [
+      "Close the 11-point CRS gap",
+      "Find a verified consultant — not a scam artist",
+      "The French strategy — CLB 7 for bilingual bonus"
+    ]
+  },
+  "narrator": {
+    "audience": "investors and product team",
+    "voice": "Third-person. The pure skilled worker perspective — no employer, no investment, no provincial backing. Just the points system.",
+    "format": "immigrant perspective + systemic fairness angle"
+  },
+  "scenes": [
+    {
+      "ts": "2026-05-25T01:02:06.500Z",
+      "url": "http://localhost:3000/",
+      "dsl": "\n    > Amara finds CanaDREAMERS. Verified consultants only. Every consultant is CICC-registered.\n    @ Stop guessing\n    \"3 Verified consultants only. That's the right filter.\n    @ Immigration Consultants\n    \" Let me find someone who does FSWP.\n    .\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara finds CanaDREAMERS. Verified consultants only. Every consultant is CICC-registered."
+              },
+              {
+                "match": "Stop guessing",
+                "thought": "Verified consultants only. That's the right filter.",
+                "duration": 3000
+              },
+              {
+                "match": "Immigration Consultants",
+                "thought": "Let me find someone who does FSWP."
+              },
+              {
+                "clear": true,
+                "clearNarrate": true
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:02:09.668Z",
+      "url": "http://localhost:3000/tools/noc-finder",
+      "dsl": "\n    > She finds Chris Daw. RCIC R409583, Vancouver, FSWP specialist. Fee range: $3,000-6,000. Three completed cases, 100% success rate.\n    \"5 Three cases, all successful. He's not the cheapest but he's verified. $3,000 is the low end. That's three months of my rent. But Tunde's agent charged $5,000 and it worked.\n    \" The difference is accountability. If Chris is on this platform and CICC-verified, he can't disappear with my money.\n    .\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "She finds Chris Daw. RCIC R409583, Vancouver, FSWP specialist. Fee range: $3,000-6,000. Three completed cases, 100% success rate."
+              },
+              {
+                "match": null,
+                "thought": "Three cases, all successful. He's not the cheapest but he's verified. $3,000 is the low end. That's three months of my rent. But Tunde's agent charged $5,000 and it worked.",
+                "duration": 5000
+              },
+              {
+                "match": null,
+                "thought": "The difference is accountability. If Chris is on this platform and CICC-verified, he can't disappear with my money."
+              },
+              {
+                "clear": true,
+                "clearNarrate": true
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:02:09.670Z",
+      "url": "http://localhost:3000/tools/noc-finder",
+      "dsl": "\n    > Sunday evening. Amara sits on her balcony in Lekki. The Lagos skyline is orange with dust and sunset. She opens the screenshot of Chris's profile.\n    \"3 I have been thinking about this for 8 months.\n    \"3 The CRS gap is 11 points. The French strategy is real. The money is there.\n    \"5 I am running out of birthdays.\n    .\n  ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Sunday evening. Amara sits on her balcony in Lekki. The Lagos skyline is orange with dust and sunset. She opens the screenshot of Chris's profile."
+              },
+              {
+                "match": null,
+                "thought": "I have been thinking about this for 8 months.",
+                "duration": 3000
+              },
+              {
+                "match": null,
+                "thought": "The CRS gap is 11 points. The French strategy is real. The money is there.",
+                "duration": 3000
+              },
+              {
+                "match": null,
+                "thought": "I am running out of birthdays.",
+                "duration": 5000
+              },
+              {
+                "clear": true,
+                "clearNarrate": true
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "ts": "2026-05-25T01:02:09.673Z",
+      "url": "http://localhost:3000/tools/noc-finder",
+      "dsl": "\n      > Amara decides. She will sign up tomorrow morning. The decision is made.\n      \"5 Tomorrow. I sign up tomorrow. And then the algorithm starts.\n      .\n    ",
+      "tape": [
+        {
+          "t": 0,
+          "fn": "scene",
+          "args": [
+            [
+              {
+                "narrate": "Amara decides. She will sign up tomorrow morning. The decision is made."
+              },
+              {
+                "match": null,
+                "thought": "Tomorrow. I sign up tomorrow. And then the algorithm starts.",
+                "duration": 5000
+              },
+              {
+                "clear": true,
+                "clearNarrate": true
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "startedAt": "2026-05-25T01:02:06.500Z"
+}

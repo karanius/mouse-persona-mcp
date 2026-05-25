@@ -19,11 +19,11 @@
 - CRS 430, job offer from Sanctuary AI, robotics engineer
 - Thinks: "BC PNP Tech is the fastest path. Sanctuary AI is a known company — they've done PNP before. This is straightforward IF the employer cooperates on their side. Retainer $5,000."
 - Responds:
-  "Jun-seo, welcome. Your profile is clean for BC PNP Tech — valid job offer, STEM occupation, meets all requirements. Here's the play: 1) Sanctuary AI registers as a BC PNP employer (they may already be registered). 2) We file your BC PNP nomination. 3) BC PNP Tech processes in 2-3 months. 4) Once nominated, your CRS goes to 1030. 5) Next Express Entry draw, you get an ITA automatically. 6) We submit your full PR application. Total timeline: 8-12 months from today to PR. My retainer is $5,000 for PNP + Express Entry. One question: has Sanctuary's HR filed BC PNP nominations before? That determines whether we start from scratch or jump to step 2."
+  "Jun-seo, welcome. Your profile is clean for BC PNP Tech — valid job offer, STEM occupation, meets all requirements. Here's the play: 1) Sanctuary AI provides employer documentation (job offer on letterhead, WorkSafeBC info) and cooperates with BC PNP verification. 2) You register through BC PNP Online and we file your nomination. 3) BC PNP Tech processes in 2-3 months. 4) Once nominated, your CRS goes to 1030. 5) Next Express Entry draw, you get an ITA automatically. 6) We submit your full PR application. Total timeline: 8-12 months from today to PR. My retainer is $5,000 for PNP + Express Entry. One question: has Sanctuary's HR supported BC PNP nominations before? That determines how quickly they can get us the employer documentation."
 
 ### Scene 3.1.3 — Jun-seo Replies
 **Agent: Jun-seo**
-- "Chris, that's exactly what I calculated. 8-12 months is acceptable — Sanctuary said they can wait up to 6 months for the work permit. I'll ask their HR about prior PNP registrations. Two concerns: 1) I did mandatory military service in Korea 2019-2021. Does that affect anything? 2) Can I start working remotely for Sanctuary while the application processes? $5,000 is fine. Let's schedule a call."
+- "Chris, that's exactly what I calculated. 8-12 months is acceptable — Sanctuary said they can wait up to 6 months for the work permit. I'll ask their HR about prior PNP nominations. Two concerns: 1) I did mandatory military service in Korea 2019-2021. Does that affect anything? 2) Can I start working remotely for Sanctuary while the application processes? $5,000 is fine. Let's schedule a call."
 
 ### Scene 3.1.4 — Chris Responds
 **Agent: Chris**
@@ -35,7 +35,7 @@
 ### Scene 3.2.1 — Video Call
 **Both agents — narrated**
 - 20-minute call (shortest of the 3 clients — simplest program)
-- Chris confirms: Sanctuary AI IS registered with BC PNP (they've nominated before)
+- Chris confirms: Sanctuary AI has supported BC PNP nominations before — they know the documentation requirements
 - Timeline breakdown:
   - Week 1-2: Gather documents, prepare BC PNP application
   - Week 3: Submit BC PNP nomination with employer support
@@ -60,11 +60,11 @@
 - Document checklist: 10 items (simpler than SUV or Entrepreneur)
 - Timeline: aggressive — nomination target in 8 weeks
 - Retainer: $5,000
-- First task: "Coordinate with Sanctuary AI HR for employer registration confirmation"
+- First task: "Coordinate with Sanctuary AI HR for employer documentation (job offer, WorkSafeBC, business details)"
 
 ### Scene 3.3.3 — Chris's Dashboard
 - 3 clients now: Ahmed (Active, SUV), Priya (Active, Entrepreneur), Jun-seo (Intake, PNP)
-- Today's Focus: "Jun-seo Park — confirm Sanctuary AI employer registration"
+- Today's Focus: "Jun-seo Park — collect Sanctuary AI employer documentation for BC PNP"
 
 ---
 
@@ -74,5 +74,5 @@
 |---|---|
 | Jun-seo | Linked to Chris. Retainer $5,000. Intake. |
 | Chris's dashboard | 3 clients, 3 different programs |
-| Sanctuary AI | Confirmed BC PNP employer registration |
+| Sanctuary AI | Employer documentation confirmed — experienced with BC PNP nominations |
 | Timeline | Nomination target: 8 weeks |
